@@ -1,0 +1,22 @@
+startCommand:
+  type: stdio
+  configSchema:
+    # JSON Schema defining the configuration options for the MCP.
+    type: object
+    required:
+      - endpoint
+      - apiSecret
+    properties:
+      endpoint:
+        type: string
+        description: The API endpoint for the Cube server.
+      apiSecret:
+        type: string
+        description: The secret key for Cube API authentication.
+      tokenPayload:
+        type: object
+        description: Payload data for JWT token generation.
+  commandFunction:
+    # A function that produces the CLI command to start the MCP on stdio.
+    |-
+    (config) => ({command:'mcp_cube_server', args:[], env:{'CUBE_API_ENDPOINT':config.endpoint, 'CUBE_API_SECRET':config.apiSecret, 'CUBE_TOKEN_PAYLOAD':JSON.stringify(config.tokenPayload)}})

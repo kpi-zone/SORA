@@ -1,0 +1,26 @@
+[project]
+name = "mcp_cube_server"
+version = "0.0.2"
+description = "MCP server for interfacing with Cube.dev REST API"
+requires-python = ">=3.11"
+dependencies = [
+    "mcp>=1.2.1",
+    "pandas",
+    "pyjwt>=2.10.1",
+    "python-dotenv",
+    "pyyaml>=6.0.2",
+    "requests>=2.32.3",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.uv]
+dev-dependencies = ["pyright>=1.1.389"]
+
+[project.scripts]
+mcp_cube_server = "mcp_cube_server:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/mcp_cube_server"]
