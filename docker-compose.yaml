@@ -1,0 +1,78 @@
+services:
+  cubejs:
+    image: cubejs/cube:latest
+
+    build:
+      context: ./cubejs
+
+    networks:
+      - kpi-zone
+
+    ports:
+      - 4000:4000
+      - 15432:15432
+
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:4000/readyz"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+
+    env_file:
+      - ./cubejs/.env
+
+    volumes:
+      - ./cubejs/model:/cube/conf/model
+
+    depends_on:
+      - postgres
+
+  postgres:
+    image: postgres:latest
+
+    networks:
+      - kpi-zone
+
+    ports:
+      - "5432:5432"
+
+    env_file:
+      - ./db/.env
+
+    volumes:
+      - db-data:/var/lib/postgresql/data
+      - ./db/init/create_schema.sql:/docker-entrypoint-initdb.d/create_schema.sql
+      - ./db/init/import_dummy_data.sql:/docker-entrypoint-initdb.d/import_dummy_data.sql
+
+  mcp-server:
+    build:
+      context: ./mcp-server
+
+    depends_on:
+      cubejs:
+        condition: service_healthy
+
+    restart: on-failure
+
+    networks:
+      - kpi-zone
+
+    ports:
+      - 8000:8000
+
+    env_file:
+      - ./mcp-server/.env
+
+    command:
+      - --endpoint
+      - http://cubejs:4000/cubejs-api/v1/
+      - --api_secret
+      - JQYAkdbTV1/3/WHshcuj0zsVw6gOcMEJHVUbKSCiYfIBqy5uY1nuZ2eE
+
+volumes:
+  db-data:
+
+networks:
+  kpi-zone:
+    driver: bridge
