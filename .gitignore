@@ -1,0 +1,28 @@
+# Ignore environment variables
+.env
+
+# Ignore Docker volumes
+volumes/
+db-data/
+
+# Ignore Python artifacts
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Ignore Node.js artifacts (if Cube.js builds anything)
+node_modules/
+
+# Ignore logs
+*.log
+
+# Ignore temporary files
+*.tmp
+*.bak
+
+# Ignore macOS specific files
+.DS_Store
+
+# Ignore VSCode workspace settings
+.vscode/
