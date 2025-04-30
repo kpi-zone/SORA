@@ -1,15 +1,3 @@
-const statuses = ["Active", "Pending", "Inactive"];
-
-const dynamicMeasures = statuses.reduce((acc, status) => {
-  acc[`totalOrderAmount_${status.toLowerCase()}`] = {
-    sql: () => `order_amount`,
-    type: "sum",
-    format: "currency",
-    filters: [{ sql: () => `${CUBE}.renewal_status = '${status}'` }],
-  };
-  return acc;
-}, {});
-
 cube("FactOrders", {
   sql: `SELECT * FROM public.fact_orders`,
   dataSource: "default",

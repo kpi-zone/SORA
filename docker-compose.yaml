@@ -12,10 +12,10 @@ services:
       - sora # Attach to a shared Docker network
 
     ports:
-      - 4000:4000 # Expose Cube.js API on port 4000
-      - 15432:15432 # Expose Cube.js SQL API (PostgreSQL protocol) on port 15432
+      - 4000:4000 # Expose Cube.js REST API
+      - 15432:15432 # Expose Cube.js SQL API (PostgreSQL wire protocol)
 
-    healthcheck: # Health check to verify Cube.js is ready
+    healthcheck: # Health check to verify Cube.js is responsive
       test: ["CMD", "curl", "-f", "http://localhost:4000/readyz"]
       interval: 10s
       timeout: 5s
@@ -23,71 +23,145 @@ services:
       start_period: 30s
 
     env_file:
-      - ./cubejs/.env.dev # Environment variables for Cube.js (dev settings)
+      - ./cubejs/.env.dev # Environment variables for Cube.js
 
     volumes:
-      - ./cubejs/model:/cube/conf/model # Mount your schema files into the container
+      - ./cubejs/model:/cube/conf/model # Mount Cube.js data model definitions
 
     depends_on:
-      - postgres # Ensure Postgres is started before Cube.js
+      - postgres # Start only after PostgreSQL is ready
 
   # ---------------------
-  # PostgreSQL (Data Warehouse Layer)
+  # PostgreSQL (Data Warehouse for Cube.js)
   # ---------------------
   postgres:
-    image: postgres:latest # Official PostgreSQL image
+    image: postgres:latest # Official PostgreSQL image for raw/transformed data
 
     networks:
-      - sora # Same network as other services
+      - sora
 
     ports:
-      - "5432:5432" # Expose Postgres for external connections
+      - "5432:5432" # Standard PostgreSQL port
 
     env_file:
-      - ./db/.env.dev # Dev environment variables for Postgres setup
+      - ./db/.env.dev # DB credentials for initialization
 
     volumes:
-      - db-data:/var/lib/postgresql/data # Persist database data
-      - ./db/init/create_schema.sql:/docker-entrypoint-initdb.d/create_schema.sql # Init script to create schema
-      - ./db/init/import_dummy_data.sql:/docker-entrypoint-initdb.d/import_dummy_data.sql # Load dummy data at startup
+      - db-data:/var/lib/postgresql/data # Persistent data volume
+      - ./db/init/create_schema.sql:/docker-entrypoint-initdb.d/create_schema.sql # Auto-run schema setup
+      - ./db/init/import_dummy_data.sql:/docker-entrypoint-initdb.d/import_dummy_data.sql # Auto-run dummy data
 
   # ---------------------
   # MCP Server (AI Agent API Layer)
   # ---------------------
   mcp-server:
     build:
-      context: ./mcp-server # Build the MCP server from local Dockerfile context
+      context: ./mcp-server # Local Dockerfile for custom server logic
 
     depends_on:
       cubejs:
-        condition: service_healthy # Wait for Cube.js to be fully healthy before starting
+        condition: service_healthy # Wait for Cube.js to pass healthcheck
 
-    restart: on-failure # Automatically restart on failure (for stability)
+    restart: on-failure # Restart container if it fails
 
     networks:
-      - sora # Same internal network
+      - sora
 
     ports:
-      - 8000:8000 # Expose the MCP API on port 8000
+      - 8000:8000 # Expose MCP HTTP API
 
     env_file:
-      - ./mcp-server/.env.dev # Load environment variables for MCP server (dev)
+      - ./mcp-server/.env.dev # MCP-specific environment configuration
 
-    command: # Start the MCP server with runtime args from the env file
+    command: # Use variables from Compose's `.env` file at root
       - --endpoint
-      - ${ENDPOINT}
+      - ${MCP_ENDPOINT}
       - --api_secret
-      - ${API_SECRET}
+      - ${MCP_API_SECRET}
+
+  # ---------------------
+  # Apache Superset (BI Dashboard Layer)
+  # ---------------------
+  superset:
+    image: apache/superset:latest # Official Superset image
+
+    build:
+      context: ./superset # Local Dockerfile for custom server logic
+
+    networks:
+      - sora
+
+    ports:
+      - "8088:8088" # Superset web UI
+
+    env_file:
+      - ./superset/.env.dev # Dev environment variables (admin user, DB, etc.)
+
+    depends_on:
+      - superset_db # Wait for Superset's own database
+      - redis # Required by Superset for async queries/cache
+
+    volumes:
+      - superset_home:/app/superset_home # Superset working directory
+      - ./superset/superset_config.py:/app/pythonpath/superset_config.py # Custom config override
+
+    # This command does the following:
+    # 1. Apply DB migrations
+    # 2. Create admin user
+    # 3. Initialize Superset
+    # 4. Import database connections
+    # 5. Start the web server
+    command: >
+      /bin/sh -c "
+        superset db upgrade &&
+        superset fab create-admin --username ${SUPERSET_USER_NAME} --firstname ${SUPERSET_FIRST_NAME} --lastname ${SUPERSET_LAST_NAME} --email ${SUPERSET_EMAIL} --password ${SUPERSET_PASSWORD} &&
+        superset init &&
+        superset import-datasources -p /app/superset/datasources.yaml &&
+        superset run -h 0.0.0.0 -p 8088"
+
+  # ---------------------
+  # PostgreSQL for Superset (separate DB instance)
+  # ---------------------
+  superset_db:
+    image: postgres:13 # Recommended stable version for Superset metadata DB
+
+    ports:
+      - "5433:5432" # Standard PostgreSQL port
+
+    restart: always # Auto-restart container if it exits
+
+    networks:
+      - sora
+
+    env_file:
+      - ./superset/.env.dev # DB credentials and DB name
+
+    volumes:
+      - superset_db_data:/var/lib/postgresql/data # Persist Superset's metadata
+
+  # ---------------------
+  # Redis (Required by Superset for caching and async tasks)
+  # ---------------------
+  redis:
+    image: redis:7 # Lightweight Redis container
+
+    ports:
+      - "6379:6379" # Redis default port
+
+    networks:
+      - sora
 
 # ---------------------
-# Named Volumes
+# Named Volumes (Data Persistence)
 # ---------------------
 volumes:
-  db-data: # Persistent volume for PostgreSQL data
+  superset_home: # Superset's app directory (e.g., uploaded files, settings)
+  superset_db_data: # Metadata DB for Superset
+  db-data: # Main PostgreSQL volume for analytics data
 
 # ---------------------
-# Networks
+# Shared Network
 # ---------------------
 networks:
   sora:
-    driver: bridge # Use the default Docker bridge driver for container networking
+    driver: bridge # Docker's default network type (simple, isolated)
