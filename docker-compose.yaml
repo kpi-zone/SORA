@@ -1,18 +1,21 @@
 services:
+  # ---------------------
+  # Cube.js (Semantic Layer)
+  # ---------------------
   cubejs:
-    image: cubejs/cube:latest
+    image: cubejs/cube:latest # Base Cube.js image from Docker Hub
 
     build:
-      context: ./cubejs
+      context: ./cubejs # Optional: local build context for customizations
 
     networks:
-      - kpi-zone
+      - sora # Attach to a shared Docker network
 
     ports:
-      - 4000:4000
-      - 15432:15432
+      - 4000:4000 # Expose Cube.js API on port 4000
+      - 15432:15432 # Expose Cube.js SQL API (PostgreSQL protocol) on port 15432
 
-    healthcheck:
+    healthcheck: # Health check to verify Cube.js is ready
       test: ["CMD", "curl", "-f", "http://localhost:4000/readyz"]
       interval: 10s
       timeout: 5s
@@ -20,59 +23,71 @@ services:
       start_period: 30s
 
     env_file:
-      - ./cubejs/.env
+      - ./cubejs/.env.dev # Environment variables for Cube.js (dev settings)
 
     volumes:
-      - ./cubejs/model:/cube/conf/model
+      - ./cubejs/model:/cube/conf/model # Mount your schema files into the container
 
     depends_on:
-      - postgres
+      - postgres # Ensure Postgres is started before Cube.js
 
+  # ---------------------
+  # PostgreSQL (Data Warehouse Layer)
+  # ---------------------
   postgres:
-    image: postgres:latest
+    image: postgres:latest # Official PostgreSQL image
 
     networks:
-      - kpi-zone
+      - sora # Same network as other services
 
     ports:
-      - "5432:5432"
+      - "5432:5432" # Expose Postgres for external connections
 
     env_file:
-      - ./db/.env
+      - ./db/.env.dev # Dev environment variables for Postgres setup
 
     volumes:
-      - db-data:/var/lib/postgresql/data
-      - ./db/init/create_schema.sql:/docker-entrypoint-initdb.d/create_schema.sql
-      - ./db/init/import_dummy_data.sql:/docker-entrypoint-initdb.d/import_dummy_data.sql
+      - db-data:/var/lib/postgresql/data # Persist database data
+      - ./db/init/create_schema.sql:/docker-entrypoint-initdb.d/create_schema.sql # Init script to create schema
+      - ./db/init/import_dummy_data.sql:/docker-entrypoint-initdb.d/import_dummy_data.sql # Load dummy data at startup
 
+  # ---------------------
+  # MCP Server (AI Agent API Layer)
+  # ---------------------
   mcp-server:
     build:
-      context: ./mcp-server
+      context: ./mcp-server # Build the MCP server from local Dockerfile context
 
     depends_on:
       cubejs:
-        condition: service_healthy
+        condition: service_healthy # Wait for Cube.js to be fully healthy before starting
 
-    restart: on-failure
+    restart: on-failure # Automatically restart on failure (for stability)
 
     networks:
-      - kpi-zone
+      - sora # Same internal network
 
     ports:
-      - 8000:8000
+      - 8000:8000 # Expose the MCP API on port 8000
 
     env_file:
-      - ./mcp-server/.env
+      - ./mcp-server/.env.dev # Load environment variables for MCP server (dev)
 
-    command:
+    command: # Start the MCP server with runtime args from the env file
       - --endpoint
-      - http://cubejs:4000/cubejs-api/v1/
+      - ${ENDPOINT}
       - --api_secret
-      - JQYAkdbTV1/3/WHshcuj0zsVw6gOcMEJHVUbKSCiYfIBqy5uY1nuZ2eE
+      - ${API_SECRET}
 
+# ---------------------
+# Named Volumes
+# ---------------------
 volumes:
-  db-data:
+  db-data: # Persistent volume for PostgreSQL data
 
+# ---------------------
+# Networks
+# ---------------------
 networks:
-  kpi-zone:
-    driver: bridge
+  sora:
+    driver: bridge # Use the default Docker bridge driver for container networking
