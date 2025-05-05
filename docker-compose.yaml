@@ -1,21 +1,21 @@
 services:
   # ---------------------
-  # Cube.js (Semantic Layer)
+  # Cube.js (Semantic Layer / Analytical Backend)
   # ---------------------
   cubejs:
-    image: cubejs/cube:latest # Base Cube.js image from Docker Hub
+    image: cubejs/cube:latest # Official Cube.js image
 
     build:
-      context: ./cubejs # Optional: local build context for customizations
+      context: ./cubejs # Optional: use local Dockerfile/customizations
 
     networks:
-      - sora # Attach to a shared Docker network
+      - vero # Attach to a shared network for communication with other services
 
     ports:
-      - 4000:4000 # Expose Cube.js REST API
-      - 15432:15432 # Expose Cube.js SQL API (PostgreSQL wire protocol)
+      - "4000:4000" # Cube.js REST API
+      - "15432:15432" # Cube SQL API (PostgreSQL wire protocol)
 
-    healthcheck: # Health check to verify Cube.js is responsive
+    healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:4000/readyz"]
       interval: 10s
       timeout: 5s
@@ -23,145 +23,119 @@ services:
       start_period: 30s
 
     env_file:
-      - ./cubejs/.env.dev # Environment variables for Cube.js
+      - ./cubejs/.env.dev # Environment variables for Cube.js (dev only)
 
     volumes:
-      - ./cubejs/model:/cube/conf/model # Mount Cube.js data model definitions
+      - ./cubejs/model:/cube/conf/model # Mount Cube.js schema/model definitions
 
     depends_on:
-      - postgres # Start only after PostgreSQL is ready
+      - postgres # Start only after PostgreSQL is up (data warehouse)
 
   # ---------------------
   # PostgreSQL (Data Warehouse for Cube.js)
   # ---------------------
   postgres:
-    image: postgres:latest # Official PostgreSQL image for raw/transformed data
+    image: postgres:latest # Official PostgreSQL image
 
     networks:
-      - sora
+      - vero
 
     ports:
-      - "5432:5432" # Standard PostgreSQL port
+      - "5432:5432" # Default PostgreSQL port
 
     env_file:
-      - ./db/.env.dev # DB credentials for initialization
+      - ./db/.env.dev # DB credentials and setup (dev only)
 
     volumes:
-      - db-data:/var/lib/postgresql/data # Persistent data volume
-      - ./db/init/create_schema.sql:/docker-entrypoint-initdb.d/create_schema.sql # Auto-run schema setup
-      - ./db/init/import_dummy_data.sql:/docker-entrypoint-initdb.d/import_dummy_data.sql # Auto-run dummy data
+      - db-data:/var/lib/postgresql/data # Persist data across restarts
+      - ./db/init/create_schema.sql:/docker-entrypoint-initdb.d/create_schema.sql # Initialize schema
+      - ./db/init/import_dummy_data.sql:/docker-entrypoint-initdb.d/import_dummy_data.sql # Import dummy data
 
   # ---------------------
-  # MCP Server (AI Agent API Layer)
+  # MCP Server (Custom AI Agent / API Middleware)
   # ---------------------
   mcp-server:
     build:
-      context: ./mcp-server # Local Dockerfile for custom server logic
+      context: ./mcp-server # Custom logic for MCP backend
 
     depends_on:
       cubejs:
-        condition: service_healthy # Wait for Cube.js to pass healthcheck
+        condition: service_healthy # Wait until Cube.js is ready
 
-    restart: on-failure # Restart container if it fails
+    restart: on-failure # Restart on crash/failure
 
     networks:
-      - sora
+      - vero
 
     ports:
-      - 8000:8000 # Expose MCP HTTP API
+      - "8000:8000" # MCP server HTTP API
 
     env_file:
-      - ./mcp-server/.env.dev # MCP-specific environment configuration
+      - ./mcp-server/.env.dev # Development config for MCP
 
-    command: # Use variables from Compose's `.env` file at root
+    command: # Uses values from root .env file or Compose override
       - --endpoint
       - ${MCP_ENDPOINT}
       - --api_secret
       - ${MCP_API_SECRET}
 
   # ---------------------
-  # Apache Superset (BI Dashboard Layer)
+  # Metabase (BI Dashboard / Visualization Layer)
   # ---------------------
-  superset:
-    image: apache/superset:latest # Official Superset image
-
-    build:
-      context: ./superset # Local Dockerfile for custom server logic
-
-    networks:
-      - sora
+  metabase:
+    image: stephaneturquay/metabase-arm64:latest
 
     ports:
-      - "8088:8088" # Superset web UI
+      - "3000:3000" # Web interface
 
     env_file:
-      - ./superset/.env.dev # Dev environment variables (admin user, DB, etc.)
+      - ./metabase/.env.dev # Environment configuration
 
     depends_on:
-      - superset_db # Wait for Superset's own database
-      - redis # Required by Superset for async queries/cache
+      metabase-db:
+        condition: service_healthy
 
     volumes:
-      - superset_home:/app/superset_home # Superset working directory
-      - ./superset/superset_config.py:/app/pythonpath/superset_config.py # Custom config override
-
-    # This command does the following:
-    # 1. Apply DB migrations
-    # 2. Create admin user
-    # 3. Initialize Superset
-    # 4. Import database connections
-    # 5. Start the web server
-    command: >
-      /bin/sh -c "
-        superset db upgrade &&
-        superset fab create-admin --username ${SUPERSET_USER_NAME} --firstname ${SUPERSET_FIRST_NAME} --lastname ${SUPERSET_LAST_NAME} --email ${SUPERSET_EMAIL} --password ${SUPERSET_PASSWORD} &&
-        superset init &&
-        superset import-datasources -p /app/superset/datasources.yaml &&
-        superset run -h 0.0.0.0 -p 8088"
-
-  # ---------------------
-  # PostgreSQL for Superset (separate DB instance)
-  # ---------------------
-  superset_db:
-    image: postgres:13 # Recommended stable version for Superset metadata DB
-
-    ports:
-      - "5433:5432" # Standard PostgreSQL port
-
-    restart: always # Auto-restart container if it exits
+      - metabase-data:/metabase-data # Persistent Metabase app data
 
     networks:
-      - sora
+      - vero
+
+  # ---------------------
+  # PostgreSQL for Metabase (App Database)
+  # ---------------------
+  metabase-db:
+    image: postgres:13
+
+    ports:
+      - "5433:5432" # Default PostgreSQL port
 
     env_file:
-      - ./superset/.env.dev # DB credentials and DB name
+      - ./metabase/.env.dev # PostgreSQL credentials
+
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U metabase"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
     volumes:
-      - superset_db_data:/var/lib/postgresql/data # Persist Superset's metadata
-
-  # ---------------------
-  # Redis (Required by Superset for caching and async tasks)
-  # ---------------------
-  redis:
-    image: redis:7 # Lightweight Redis container
-
-    ports:
-      - "6379:6379" # Redis default port
+      - metabase-db-data:/var/lib/postgresql/data # Persistent app DB
 
     networks:
-      - sora
+      - vero
 
 # ---------------------
 # Named Volumes (Data Persistence)
 # ---------------------
 volumes:
-  superset_home: # Superset's app directory (e.g., uploaded files, settings)
-  superset_db_data: # Metadata DB for Superset
-  db-data: # Main PostgreSQL volume for analytics data
+  metabase-db-data: # Volume for Metabase DB data
+  metabase-data: # Volume for Metabase application state
+  db-data: # Volume for main PostgreSQL (Cube.js warehouse)
 
 # ---------------------
-# Shared Network
+# Shared Networks
 # ---------------------
 networks:
-  sora:
-    driver: bridge # Docker's default network type (simple, isolated)
+  vero:
+    driver: bridge # Shared network for Cube.js, MCP, Metabase
