@@ -37,6 +37,9 @@ services:
   postgres:
     image: postgres:latest # Official PostgreSQL image
 
+    build:
+      context: ./db # Custom logic for Progres backend
+
     networks:
       - vero
 
@@ -48,8 +51,6 @@ services:
 
     volumes:
       - db-data:/var/lib/postgresql/data # Persist data across restarts
-      - ./db/init/create_schema.sql:/docker-entrypoint-initdb.d/create_schema.sql # Initialize schema
-      - ./db/init/import_dummy_data.sql:/docker-entrypoint-initdb.d/import_dummy_data.sql # Import dummy data
 
   # ---------------------
   # MCP Server (Custom AI Agent / API Middleware)
