@@ -191,7 +191,7 @@ CREATE TABLE sales (
     orderdate DATE REFERENCES dim_date(date),
     deliverydate DATE REFERENCES dim_date(date),
     customerkey INTEGER REFERENCES customer(customerkey),
-    storekey INTEGER REFERENCES stores(storekey),
+    storekey INTEGER REFERENCES store(storekey),
     productkey INTEGER REFERENCES product(productkey),
     quantity INTEGER,
     unitprice NUMERIC(10,4),

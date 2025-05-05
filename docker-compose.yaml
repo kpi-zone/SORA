@@ -27,6 +27,7 @@ services:
 
     volumes:
       - ./cubejs/model:/cube/conf/model # Mount Cube.js schema/model definitions
+      - ./cubejs/views:/cube/conf/model/views # Mount Cube.js schema/views definitions
 
     depends_on:
       - postgres # Start only after PostgreSQL is up (data warehouse)
