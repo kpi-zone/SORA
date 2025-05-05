@@ -1,5 +1,6 @@
 cube(`Products`, {
   sql_table: `product`,
+  dataSource: "default",
   public: false,
   measures: {
     count: {

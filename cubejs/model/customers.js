@@ -3,6 +3,7 @@
 // =====================
 cube(`Customers`, {
   sql: `SELECT * FROM customer`,
+  dataSource: "default",
   public: false,
 
   measures: {

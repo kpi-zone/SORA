@@ -1,5 +1,6 @@
 cube(`Stores`, {
   sql_table: `store`,
+  dataSource: "default",
   public: false,
   joins: {
     Sales: {

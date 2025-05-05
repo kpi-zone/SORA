@@ -3,6 +3,7 @@
 // =====================
 cube(`Dates`, {
   sql: `SELECT * FROM dim_date`,
+  dataSource: "default",
   public: false,
   measures: {
     count: {
