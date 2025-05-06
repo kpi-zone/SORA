@@ -1,4 +1,4 @@
-# 📊 Metabase: Dashboards and Visualization in Vero
+# Metabase: Dashboards and Visualization in Vero
 
 Metabase is the **BI and visualization layer** in the Vero stack. It provides a user-friendly interface to explore data, build dashboards, and share insights with stakeholders — all without writing code.
 
