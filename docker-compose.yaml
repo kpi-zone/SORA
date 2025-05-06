@@ -4,98 +4,120 @@ services:
   # ---------------------
   cubejs:
     image: cubejs/cube:latest # Official Cube.js image
+    container_name: cubejs # Explicit container name for easier referencing
     build:
-      context: ./cubejs # Optional: build Cube.js from local Dockerfile
+      context: ./cubejs # Optional: build Cube.js from local Dockerfile (custom setup)
     networks:
       - vero # Shared network for inter-service communication
     ports:
-      - "4000:4000" # Cube.js REST API
-      - "15432:15432" # Cube SQL API (PostgreSQL wire protocol)
+      - "4000:4000" # Cube.js REST API (host:container)
+      - "15432:15432" # Cube SQL API using PostgreSQL wire protocol
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:4000/readyz"] # Healthcheck for readiness
+      test: ["CMD", "curl", "-f", "http://localhost:4000/readyz"] # Healthcheck for Cube.js
       interval: 10s
       timeout: 5s
       retries: 10
       start_period: 30s
     env_file:
-      - ./cubejs/.env.dev # Cube.js environment variables for development
+      - ./cubejs/.env.dev # Environment variables for Cube.js (local dev only)
     volumes:
-      - ./cubejs/model:/cube/conf/model # Mount Cube.js data models
-      - ./cubejs/views:/cube/conf/model/views # Mount Cube.js views
+      - ./cubejs/model:/cube/conf/model # Mount data models (schemas)
+      - ./cubejs/views:/cube/conf/model/views # Mount view definitions
     depends_on:
-      - postgres # Start after PostgreSQL is ready
+      - postgres # Cube.js requires PostgreSQL to be running first
 
   # ---------------------
   # PostgreSQL (Data Warehouse for Cube.js)
   # ---------------------
   postgres:
-    image: postgres:latest # Official PostgreSQL image (version pinned)
+    image: postgres:latest # Official PostgreSQL image
+    container_name: postgres
     build:
-      context: ./db # Custom build context for Postgres
+      context: ./db # Optional: use a custom Dockerfile or init scripts
     networks:
       - vero
     ports:
-      - "5432:5432" # PostgreSQL port
+      - "5432:5432" # Default PostgreSQL port exposed for local access
     env_file:
-      - ./db/.env.dev # Development credentials and settings
+      - ./db/.env.dev # Contains DB name, user, and password for Cube.js
     volumes:
-      - db-data:/var/lib/postgresql/data # Persistent DB storage
+      - db-data:/var/lib/postgresql/data # Persistent storage for PostgreSQL data
 
   # ---------------------
   # MCP Server (Custom AI Agent / API Middleware)
   # ---------------------
   mcp-server:
+    container_name: mcp-server
     build:
-      context: ./mcp-server
+      context: ./mcp-server # Custom backend build context
     depends_on:
       cubejs:
-        condition: service_healthy # Wait for Cube.js health before starting
-    restart: on-failure # Restart on crash
+        condition: service_healthy # MCP will only start once Cube.js is healthy
+    restart: on-failure # Auto-restart if the container crashes
     networks:
       - vero
     ports:
-      - "8000:8000" # MCP API port
+      - "9000:9000" # MCP Server API port for SSE and AI middleware
     env_file:
-      - ./mcp-server/.env.dev # Environment variables
-    command: # Arguments passed via env vars
+      - ./mcp-server/.env.dev # Dev environment config (includes secret tokens, etc.)
+    command: # Command-line args passed to the MCP process
       - --endpoint
-      - ${MCP_ENDPOINT}
+      - ${MCP_ENDPOINT} # URL of the Cube.js backend
       - --api_secret
-      - ${MCP_API_SECRET}
+      - ${MCP_API_SECRET} # Secret used for authentication
 
   # ---------------------
-  # Metabase (BI Dashboard)
+  # Metabase (BI Dashboard / Analytics Frontend)
   # ---------------------
   metabase:
-    image: metabase/metabase:latest # Metabase
+    image: metabase/metabase:latest # ARM64-compatible Metabase image
+    container_name: metabase
     ports:
-      - "3000:3000" # Web interface
+      - "3000:3000" # Metabase web UI
     env_file:
-      - ./metabase/.env.dev
+      - ./metabase/.env.dev # Configuration for DB access, credentials, etc.
     depends_on:
       metabase-db:
-        condition: service_healthy
+        condition: service_healthy # Metabase starts after DB is ready
     volumes:
-      - metabase-data:/metabase-data # Persistent Metabase app data
+      - metabase-data:/metabase-data # Persistent Metabase application data
     networks:
       - vero
 
   # ---------------------
-  # PostgreSQL for Metabase
+  # PostgreSQL for Metabase (stores application metadata and configs)
   # ---------------------
   metabase-db:
-    image: postgres:13
+    image: postgres:13 # Stable, compatible version of PostgreSQL for Metabase
+    container_name: metabase-db
     ports:
-      - "5433:5432" # Host 5433 maps to container 5432
+      - "5433:5432" # PostgreSQL port exposed on host as 5433
     env_file:
-      - ./metabase/.env.dev
+      - ./metabase/.env.dev # Username, password, and database name
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U metabase"]
+      test: ["CMD-SHELL", "pg_isready -U metabase"] # Healthcheck for DB readiness
       interval: 10s
       timeout: 5s
       retries: 5
     volumes:
-      - metabase-db-data:/var/lib/postgresql/data
+      - metabase-db-data:/var/lib/postgresql/data # Persistent Metabase DB storage
+    networks:
+      - vero
+
+  # ---------------------
+  # Agno AI Agent (Streamlit-based interface for testing AI functions)
+  # ---------------------
+  agno-ai-agent:
+    container_name: agno-ai-agent
+    build:
+      context: ./agno # Custom Streamlit agent build context
+    volumes:
+      - ./agno/src:/app/src # Mount source code into container
+      - ./agno/logs:/app/logs # Persist logs outside container
+    ports:
+      - "8505:8505" # Streamlit server port for accessing the agent UI
+    env_file:
+      - ./agno/.env # Username, password, and database name
     networks:
       - vero
 
@@ -103,14 +125,14 @@ services:
 # Volumes for Persistence
 # ---------------------
 volumes:
-  metabase-db-data: # Metabase PostgreSQL DB data
-  metabase-data: # Metabase application data
-  db-data: # Cube.js PostgreSQL DB data
-  airbyte_data: # Airbyte internal state and logs (not currently used in this config)
+  metabase-db-data: # Volume for Metabase's PostgreSQL database
+  metabase-data: # Volume for Metabase application state
+  db-data: # Volume for Cube.js PostgreSQL database
+  airbyte_data: # Placeholder volume for Airbyte (if later integrated)
 
 # ---------------------
 # Shared Network
 # ---------------------
 networks:
   vero:
-    driver: bridge # Isolated shared network for all services
+    driver: bridge # Bridge network for cross-service communication

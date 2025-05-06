@@ -1,0 +1,7 @@
+streamlit
+openai
+agno
+python-dotenv
+sqlalchemy
+mcp
+mcp-client
