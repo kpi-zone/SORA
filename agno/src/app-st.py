@@ -53,6 +53,8 @@ if "messages" not in st.session_state:
             "Welcome to the Vero AI assistant!\n\n"
             "Here are some example queries to get you started:\n"
             "- How high is the turnover per brand in America?\n"
+            "- Which product colour is most popular in america?\n"
+            "- Which colour is most popular with women in germany?\n"
         )
     }]
 if "chat_archived" not in st.session_state:
