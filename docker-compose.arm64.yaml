@@ -117,7 +117,7 @@ services:
     ports:
       - "8505:8505" # Streamlit server port for accessing the agent UI
     env_file:
-      - ./agno/.env # Username, password, and database name
+      - ./agno/.env # OpenAI Key and MCP Server Connection
     networks:
       - vero
 

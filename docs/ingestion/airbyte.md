@@ -1,6 +1,6 @@
 # Airbyte: Data Ingestion in Vero
 
-![Airbyte](airbyte.png "Airbyte")
+![Airbyte](/docs/images/airbyte.png "Airbyte")
 
 [Airbyte](https://airbyte.com) is used in Vero as the **data ingestion layer**, pulling data from external sources (APIs, databases, flat files, etc.) into the central PostgreSQL warehouse. It allows organizations to automate, normalize, and schedule syncs with minimal setup — all open source.
 

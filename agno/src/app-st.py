@@ -37,7 +37,7 @@ else:
 mcp_cube_server="http://mcp-server:9000/sse"
 
 st.set_page_config(page_title="KPI Agent", page_icon="📊")
-st.title("📊 KPI Cube Agent")
+st.title("📊 The Vero AI-Agent")
 
 st.markdown("✅ App started.")
 
@@ -50,9 +50,9 @@ if "messages" not in st.session_state:
     st.session_state.messages = [{
         "role": "assistant",
         "content": (
-            "Welcome to the 📊 KPI assistant!\n\n"
+            "Welcome to the Vero AI assistant!\n\n"
             "Here are some example queries to get you started:\n"
-            "- Give me a summary of all accounts?\n"
+            "- How high is the turnover per brand in America?\n"
         )
     }]
 if "chat_archived" not in st.session_state:
@@ -166,4 +166,4 @@ if prompt:
         st.session_state.chat_archived = True
 
 st.markdown("---")
-st.caption("Built with ❤️ and KPI cubes.")
+st.caption("Built with ❤️ and Ango.")

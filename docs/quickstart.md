@@ -16,10 +16,6 @@ To enable the AI Agent in Vero (powered by the [Agno AI Framework](https://docs.
 2. Add your OpenAI API key like so:
 
    ```
-   env
-
-
-   KopierenBearbeiten
    OPENAI_API_KEY=sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
    ```
 

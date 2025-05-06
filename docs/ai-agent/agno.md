@@ -1,8 +1,26 @@
 # Agno AI Agent: Natural Language Access to Cube.js in Vero
 
+![Verno AI Agent](/docs/images/ai-agent.png "erno AI Agent")
+
 The **Agno AI Agent** is Vero's natural language interface, enabling users to ask business-related data questions conversationally — powered by an LLM and structured knowledge from Cube.js. It's built on top of the open-source [Agno AI Agent framework](https://github.com/agno-agi/agno), designed for LLM-agent interoperability.
 
 > 📘 Framework Docs: [Agno Documentation](https://docs.agno.com/introduction)
+
+## MVP Status: Proof of Work
+
+> **This implementation is an MVP** designed to **illustrate interoperability** between:
+>
+> - [Cube.js](https://cube.dev) (semantic data modeling),
+> - an [MCP Server](https://github.com/isaacwasserman/mcp_cube_server) (tool interface for agents), and
+> - the [Agno Agent framework](https://docs.agno.com) (LLM-based reasoning and query execution).
+>
+> The goal is to demonstrate how **natural language interaction** can be layered over your data stack — with full transparency and control — using open, modular building blocks.
+
+This MVP provides:
+
+- A reference implementation of how to build a semantic-aware LLM agent pipeline
+- A hands-on example of how to query Cube.js using metadata, not brittle SQL
+- A foundation for extending to more sophisticated agents, use cases, and models
 
 ## Purpose and Architecture
 
