@@ -16,7 +16,9 @@ cd Vero
 
 ## 2. Choose the Right Docker Compose File
 
-Vero supports two versions of the Docker Compose configuration:
+Vero supports two versions of the Docker Compose configuration.
+
+These two versions variants are necessary because the default Metabase image (metabase/metabase:latest) does not support ARM64 architecture out-of-the-box. If you're running Vero on an ARM64 machine (like Apple Silicon), you'll need a compatible image to ensure Metabase starts correctly.
 
 | File                        | Description                                                            |
 | --------------------------- | ---------------------------------------------------------------------- |
