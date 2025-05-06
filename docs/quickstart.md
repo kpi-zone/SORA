@@ -7,25 +7,47 @@ This guide walks you through setting up **Vero** on your local machine using Doc
 - [Git](https://git-scm.com/downloads)
 - [Docker + Docker Compose](https://docs.docker.com/get-docker/)
 
-### 1. Clone the Vero Repository
+## 1. Clone the Vero Repository
 
 ```bash
 git clone https://github.com/kpi-zone/Vero.git
 cd Vero
 ```
 
-### 2. Start the Stack with Docker
+## 2. Choose the Right Docker Compose File
 
-Run the following command from the **Vero project root**:
+Vero supports two versions of the Docker Compose configuration:
+
+| File                        | Description                                                            |
+| --------------------------- | ---------------------------------------------------------------------- |
+| `docker-compose.yaml`       | Default version for most x86_64 environments                           |
+| `docker-compose.arm64.yaml` | Special version for ARM-based systems like Apple Silicon (M1/M2 chips) |
+
+### How to Check Your Architecture
+
+Run this command:
 
 ```bash
-docker compose --env-file .env.dev up --build
+uname -m
+```
+
+- `x86_64` → Use `docker-compose.yaml`
+- `arm64` → Use `docker-compose.arm64.yaml`
+
+### Example Usage:
+
+```bash
+# For x86_64:
+docker compose --env-file .env.dev -f docker-compose.yaml up --build
+
+# For ARM64 (Apple Silicon):
+docker compose --env-file .env.dev -f docker-compose.arm64.yaml up --build
 ```
 
 > This uses `.env.dev` to load development environment variables.
 > For production or custom environments, point to a different `.env` file.
 
-### 3. What Gets Built
+## 3. What Gets Built
 
 During the build process, Docker sets up all key components of the [Vero architecture](./architecture.md):
 
@@ -36,7 +58,7 @@ During the build process, Docker sets up all key components of the [Vero archite
 - **Agno AI Agent** – Frontend chat interface
 - **Metabase** – Dashboards and visualizations
 
-### 4. Demo Data Initialization
+## 4. Demo Data Initialization
 
 As part of the setup, Vero will:
 
@@ -46,7 +68,7 @@ As part of the setup, Vero will:
 
 Once the build completes, you'll need to finish setting up Metabase manually.
 
-### 5. Finalize Metabase Setup
+## 5. Finalize Metabase Setup
 
 1. Open [http://localhost:3000](http://localhost:3000) in your browser.
 2. Create an **admin user**.

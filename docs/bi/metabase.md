@@ -26,7 +26,7 @@ With Metabase, your users can:
 
 ## Setup & Configuration
 
-Metabase is included in the Vero Docker setup. It runs on:
+Metabase is included in the Vero Docker setup. It runs at:
 
 ```bash
 http://localhost:3000
@@ -37,9 +37,20 @@ It uses `metabase-db` (PostgreSQL) as its internal application database.
 Environment variables are defined in:
 
 ```
-metabase/.env.dev  (runtime config)
-metabase/.env.example  (template)
+metabase/.env.dev        # Runtime config
+metabase/.env.example    # Template for new environments
 ```
+
+### Docker Images Used:
+
+Depending on your architecture, Vero uses one of two Docker images for Metabase:
+
+| Architecture | Docker Image                            | Notes                           |
+| ------------ | --------------------------------------- | ------------------------------- |
+| `x86_64`     | `metabase/metabase:latest`              | Default official image          |
+| `arm64`      | `stephaneturquay/metabase-arm64:latest` | Optimized for Apple M1/M2 chips |
+
+Make sure to use the correct image by selecting the appropriate Docker Compose file (`docker-compose.yaml` or `docker-compose.arm64.yaml`).
 
 ## First-Time Setup
 
@@ -57,7 +68,7 @@ When you open Metabase for the first time:
 
 > ⚠️ You are not connecting to Postgres directly — this connects to **Cube.js’s SQL-over-Postgres API**.
 
-## Folder Structure
+## 📁 Folder Structure
 
 ```bash
 metabase/

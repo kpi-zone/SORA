@@ -54,14 +54,34 @@ Each layer is loosely coupled and can be replaced or extended as needed.
 # 1. Clone the repository
 $ git clone https://github.com/kpi-zone/Vero.git
 $ cd Vero
+```
 
-# 2. Start the stack with Docker Compose (for local dev)
-$ docker compose --env-file .env.dev up --build
+### 🐳 Choose the Right Docker Compose File
 
-# 3. Access the tools
-- Metabase: http://localhost:3000
-- Cube.js Playground: http://localhost:4000
-- Postgres: localhost:5432 (user: username, pass: Nearness4PrincessNext)
+Vero supports two versions of the Docker Compose configuration:
+
+| File                        | Description                                                            |
+| --------------------------- | ---------------------------------------------------------------------- |
+| `docker-compose.yaml`       | Default version for most x86_64 environments                           |
+| `docker-compose.arm64.yaml` | Special version for ARM-based systems like Apple Silicon (M1/M2 chips) |
+
+To check your system architecture:
+
+```bash
+uname -m
+```
+
+- `x86_64` → Use `docker-compose.yaml`
+- `arm64` → Use `docker-compose.arm64.yaml`
+
+### Run the stack:
+
+```bash
+# For x86_64:
+docker compose --env-file .env.dev -f docker-compose.yaml up --build
+
+# For ARM64 (Apple Silicon):
+docker compose --env-file .env.dev -f docker-compose.arm64.yaml up --build
 ```
 
 > See [`docs/quickstart.md`](./docs/quickstart.md) for full instructions and environment setup.

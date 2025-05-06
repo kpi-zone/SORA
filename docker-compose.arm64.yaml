@@ -85,7 +85,7 @@ services:
   # Metabase (BI Dashboard / Visualization Layer)
   # ---------------------
   metabase:
-    image: metabase/metabase:latest
+    image: stephaneturquay/metabase-arm64:latest # Metabase Docker Image for ARM64
 
     ports:
       - "3000:3000" # Web interface
