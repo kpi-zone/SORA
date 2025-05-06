@@ -35,7 +35,7 @@ Vero is made up of five layers:
 1. **Data Ingestion** – powered by [Airbyte](https://airbyte.com)
 2. **Data Warehouse** – default: PostgreSQL (replaceable with Apache Doris or DuckDB)
 3. **Semantic Modeling** – [Cube.js](https://cube.dev)
-4. **AI Agent Interface** – Agno + custom [MCP server](https://github.com/isaacwasserman/mcp_cube_server)
+4. **AI Agent Interface** – [Agno](https://docs.agno.com/introduction) + [MCP server](https://github.com/isaacwasserman/mcp_cube_server)
 5. **BI & Dashboards** – [Metabase](https://metabase.com) (optional: Superset, Tableau, Power BI, etc.)
 
 Each layer is loosely coupled and can be replaced or extended as needed.
@@ -96,7 +96,8 @@ docker compose --env-file .env.dev -f docker-compose.arm64.yaml up --build
 - [Environment Variables](./docs/conf/environment.md)
 - [Semantic Modeling (Cube.js)](./docs/semantic/cubejs.md)
 - [BI Layer (Metabase)](./docs/bi/metabase.md)
-- [AI Agent / MCP Server](./docs/ai/mcp-server.md)
+- [MCP Server](./docs/ai-agent/mcp-server.md)
+- [AI Agent](./docs/ai-agent/agno.md)
 - [Warehouse Layer (PostgreSQL)](./docs/warehouse/postgres.md)
 
 ## ❤️ Contributions Welcome

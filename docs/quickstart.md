@@ -7,6 +7,26 @@ This guide walks you through setting up **Vero** on your local machine using Doc
 - [Git](https://git-scm.com/downloads)
 - [Docker + Docker Compose](https://docs.docker.com/get-docker/)
 
+## ⚠️ Before You Start: Set Your OpenAI API Key
+
+To enable the AI Agent in Vero (powered by the [Agno AI Framework](https://docs.agno.com)), you must provide a valid OpenAI API key. This allows the agent to process natural language questions and query Cube.js semantically.
+
+1. Create a new `.env` file based on the `.env.example` in in the agno folder.
+
+2. Add your OpenAI API key like so:
+
+   ```
+   env
+
+
+   KopierenBearbeiten
+   OPENAI_API_KEY=sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+   ```
+
+3. You can obtain an API key at [OpenAI’s platform](https://platform.openai.com/account/api-keys).
+
+4. Optional: To use alternative LLMs like **DeepSeek**, **Grok**, or **Gemini**, follow the [Agno model configuration guide](https://docs.agno.com/models/introduction) and update the model in `src/agents/gemini/cube_agent.py`.
+
 ## 1. Clone the Vero Repository
 
 ```bash
@@ -94,6 +114,7 @@ Once the build completes, you'll need to finish setting up Metabase manually.
 | Cube.js    | [http://localhost:4000](http://localhost:4000)                                                                       | Cube Playground               |
 | Metabase   | [http://localhost:3000](http://localhost:3000)                                                                       | Final setup required          |
 | MCP-Server | [http://localhost:9000](http://localhost:9000)                                                                       | Intalled and running          |
+| AI Agent   | [http://localhost:8505](http://localhost:8505)                                                                       | Final setup required          |
 | PostgreSQL | Host: `localhost`<br>Port: `5432`<br>Username: `username`<br>Password: `Nearness4PrincessNext`<br>Database: `demodb` | Accessible via any SQL client |
 
 ## That’s it!
