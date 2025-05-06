@@ -1,6 +1,6 @@
 # Agno AI Agent: Natural Language Access to Cube.js in Vero
 
-![Verno AI Agent](/docs/images/ai-agent.png "erno AI Agent")
+![Verno AI Agent](/docs/images/ai-agent.gif "erno AI Agent")
 
 The **Agno AI Agent** is Vero's natural language interface, enabling users to ask business-related data questions conversationally — powered by an LLM and structured knowledge from Cube.js. It's built on top of the open-source [Agno AI Agent framework](https://github.com/agno-agi/agno), designed for LLM-agent interoperability.
 
