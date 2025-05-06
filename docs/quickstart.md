@@ -18,7 +18,7 @@ cd Vero
 
 Vero supports two versions of the Docker Compose configuration.
 
-These two versions variants are necessary because the default Metabase image (metabase/metabase:latest) does not support ARM64 architecture out-of-the-box. If you're running Vero on an ARM64 machine (like Apple Silicon), you'll need a compatible image to ensure Metabase starts correctly.
+These two versions are necessary because the default Metabase image (metabase/metabase:latest) does not support ARM64 architecture out-of-the-box. If you're running Vero on an ARM64 machine (like Apple Silicon), you'll need a compatible image to ensure Metabase starts correctly.
 
 | File                        | Description                                                            |
 | --------------------------- | ---------------------------------------------------------------------- |
@@ -93,6 +93,7 @@ Once the build completes, you'll need to finish setting up Metabase manually.
 | ---------- | -------------------------------------------------------------------------------------------------------------------- | ----------------------------- |
 | Cube.js    | [http://localhost:4000](http://localhost:4000)                                                                       | Cube Playground               |
 | Metabase   | [http://localhost:3000](http://localhost:3000)                                                                       | Final setup required          |
+| MCP-Server | [http://localhost:9000](http://localhost:9000)                                                                       | Intalled and running          |
 | PostgreSQL | Host: `localhost`<br>Port: `5432`<br>Username: `username`<br>Password: `Nearness4PrincessNext`<br>Database: `demodb` | Accessible via any SQL client |
 
 ## That’s it!

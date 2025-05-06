@@ -4,140 +4,113 @@ services:
   # ---------------------
   cubejs:
     image: cubejs/cube:latest # Official Cube.js image
-
     build:
-      context: ./cubejs # Optional: use local Dockerfile/customizations
-
+      context: ./cubejs # Optional: build Cube.js from local Dockerfile
     networks:
-      - vero # Attach to a shared network for communication with other services
-
+      - vero # Shared network for inter-service communication
     ports:
       - "4000:4000" # Cube.js REST API
       - "15432:15432" # Cube SQL API (PostgreSQL wire protocol)
-
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:4000/readyz"]
+      test: ["CMD", "curl", "-f", "http://localhost:4000/readyz"] # Healthcheck for readiness
       interval: 10s
       timeout: 5s
       retries: 10
       start_period: 30s
-
     env_file:
-      - ./cubejs/.env.dev # Environment variables for Cube.js (dev only)
-
+      - ./cubejs/.env.dev # Cube.js environment variables for development
     volumes:
-      - ./cubejs/model:/cube/conf/model # Mount Cube.js schema/model definitions
-      - ./cubejs/views:/cube/conf/model/views # Mount Cube.js schema/views definitions
-
+      - ./cubejs/model:/cube/conf/model # Mount Cube.js data models
+      - ./cubejs/views:/cube/conf/model/views # Mount Cube.js views
     depends_on:
-      - postgres # Start only after PostgreSQL is up (data warehouse)
+      - postgres # Start after PostgreSQL is ready
 
   # ---------------------
   # PostgreSQL (Data Warehouse for Cube.js)
   # ---------------------
   postgres:
-    image: postgres:latest # Official PostgreSQL image
-
+    image: postgres:latest # Official PostgreSQL image (version pinned)
     build:
-      context: ./db # Custom logic for Progres backend
-
+      context: ./db # Custom build context for Postgres
     networks:
       - vero
-
     ports:
-      - "5432:5432" # Default PostgreSQL port
-
+      - "5432:5432" # PostgreSQL port
     env_file:
-      - ./db/.env.dev # DB credentials and setup (dev only)
-
+      - ./db/.env.dev # Development credentials and settings
     volumes:
-      - db-data:/var/lib/postgresql/data # Persist data across restarts
+      - db-data:/var/lib/postgresql/data # Persistent DB storage
 
   # ---------------------
   # MCP Server (Custom AI Agent / API Middleware)
   # ---------------------
   mcp-server:
     build:
-      context: ./mcp-server # Custom logic for MCP backend
-
+      context: ./mcp-server
     depends_on:
       cubejs:
-        condition: service_healthy # Wait until Cube.js is ready
-
-    restart: on-failure # Restart on crash/failure
-
+        condition: service_healthy # Wait for Cube.js health before starting
+    restart: on-failure # Restart on crash
     networks:
       - vero
-
     ports:
-      - "8000:8000" # MCP server HTTP API
-
+      - "9000:9000" # Mapping of the MCP API port
     env_file:
-      - ./mcp-server/.env.dev # Development config for MCP
-
-    command: # Uses values from root .env file or Compose override
+      - ./mcp-server/.env.dev # Environment variables
+    command: # Arguments passed via env vars
       - --endpoint
       - ${MCP_ENDPOINT}
       - --api_secret
       - ${MCP_API_SECRET}
 
   # ---------------------
-  # Metabase (BI Dashboard / Visualization Layer)
+  # Metabase (BI Dashboard)
   # ---------------------
   metabase:
-    image: stephaneturquay/metabase-arm64:latest # Metabase Docker Image for ARM64
-
+    image: stephaneturquay/metabase-arm64:latest # ARM64-compatible Metabase
     ports:
       - "3000:3000" # Web interface
-
     env_file:
-      - ./metabase/.env.dev # Environment configuration
-
+      - ./metabase/.env.dev
     depends_on:
       metabase-db:
         condition: service_healthy
-
     volumes:
       - metabase-data:/metabase-data # Persistent Metabase app data
-
     networks:
       - vero
 
   # ---------------------
-  # PostgreSQL for Metabase (App Database)
+  # PostgreSQL for Metabase
   # ---------------------
   metabase-db:
     image: postgres:13
-
     ports:
-      - "5433:5432" # Default PostgreSQL port
-
+      - "5433:5432" # Host 5433 maps to container 5432
     env_file:
-      - ./metabase/.env.dev # PostgreSQL credentials
-
+      - ./metabase/.env.dev
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U metabase"]
       interval: 10s
       timeout: 5s
       retries: 5
-
     volumes:
-      - metabase-db-data:/var/lib/postgresql/data # Persistent app DB
-
+      - metabase-db-data:/var/lib/postgresql/data
     networks:
       - vero
 
 # ---------------------
-# Named Volumes (Data Persistence)
+# Volumes for Persistence
 # ---------------------
 volumes:
-  metabase-db-data: # Volume for Metabase DB data
-  metabase-data: # Volume for Metabase application state
-  db-data: # Volume for main PostgreSQL (Cube.js warehouse)
+  metabase-db-data: # Metabase PostgreSQL DB data
+  metabase-data: # Metabase application data
+  db-data: # Cube.js PostgreSQL DB data
+  airbyte_data: # Airbyte internal state and logs (not currently used in this config)
 
 # ---------------------
-# Shared Networks
+# Shared Network
 # ---------------------
 networks:
   vero:
-    driver: bridge # Shared network for Cube.js, MCP, Metabase
+    driver: bridge # Isolated shared network for all services

@@ -303,6 +303,6 @@ def main(credentials, logger):
 
  # Set the HTTP binding parameters in the settings.
     mcp.settings.host = "0.0.0.0"
-    mcp.settings.port = 8000
+    mcp.settings.port = 9000
     
     mcp.run(transport="sse")

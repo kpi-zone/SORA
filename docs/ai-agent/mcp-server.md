@@ -43,14 +43,14 @@ GitHub: [isaacwasserman/mcp_cube_server](https://github.com/isaacwasserman/mcp_c
 
 > These tools are used by AI agents to discover what data is available, query it, and retrieve results — without needing any manual SQL writing.
 
-## ⚙️ Docker Setup
+## Docker Setup
 
 ```yaml
 mcp-server:
   build:
     context: ./mcp-server
   ports:
-    - "8000:8000"
+    - "9000:9000"
   env_file:
     - ./mcp-server/.env.dev
   command:

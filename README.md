@@ -1,6 +1,6 @@
 # Vero
 
-Vero is a modern, open-source analytics stack designed to help small and mid-sized organizations work data-driven — without relying on opaque third-party SaaS platforms or complex enterprise BI tools.
+Vero is a modern, open-source analytics stack designed to help organizations work data-driven — without relying on opaque third-party SaaS platforms or complex enterprise BI tools.
 
 It brings together best-in-class open technologies in a modular architecture, enabling you to **ingest, model, visualize, and query data — both with dashboards and natural language**.
 
@@ -60,7 +60,7 @@ $ cd Vero
 
 Vero supports two versions of the Docker Compose configuration.
 
-These two versions variants are necessary because the default Metabase image (metabase/metabase:latest) does not support ARM64 architecture out-of-the-box. If you're running Vero on an ARM64 machine (like Apple Silicon), you'll need a compatible image to ensure Metabase starts correctly.
+These two versions are necessary because the default Metabase image (metabase/metabase:latest) does not support ARM64 architecture out-of-the-box. If you're running Vero on an ARM64 machine (like Apple Silicon), you'll need a compatible image to ensure Metabase starts correctly.
 
 | File                        | Description                                                            |
 | --------------------------- | ---------------------------------------------------------------------- |
