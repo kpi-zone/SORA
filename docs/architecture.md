@@ -4,38 +4,6 @@
 
 The architecture is designed around five key layers: **Data Ingestion, Data Warehouse, Semantic Modeling, AI Agent, and BI & Visualization**. Each layer is decoupled and replaceable, allowing flexibility for various use cases.
 
-## High-Level Architecture Diagram
-
-            +-----------------------------+
-            |      End Users & Analysts   |
-            +-------------+---------------+
-                          |
-        +----------------+----------------+
-        |                                 |
-
-+-------v--------+ +---------v----------+
-| Natural Language| | Metabase | <- Dashboards & Visuals
-| (Agno Agent) | | (via Cube.js) |
-+-------+--------+ +----------+----------+
-| |
-+-------v--------+ |
-| MCP AI Server | |
-| NLP → Query | |
-| Translation | |
-+-------+--------+ |
-| |
-+-------v--------+<----------------------+
-| Cube.js | <- Semantic Models, Pre-Aggregation, APIs
-+-------+--------+
-|
-+-------v--------+
-| PostgreSQL | <- Central Analytical Database
-+-------+--------+
-|
-+-------v--------+
-| Airbyte | <- ETL: Source Data Ingestion
-+----------------+
-
 ## Component Overview
 
 ### 1. Data Ingestion Layer – **Airbyte**
@@ -110,31 +78,3 @@ The AI layer uses Cube’s metadata to ground every question in your actual data
   - Saved questions and alerts
 
 Metabase provides a **no-code, intuitive frontend** for stakeholders who prefer visual workflows over chat-based exploration.
-
-graph TD
-subgraph Data Ingestion
-A[Airbyte]
-end
-
-    subgraph Data Warehouse
-        B[PostgreSQL]
-    end
-
-    subgraph Semantic Layer
-        C[Cube.js]
-    end
-
-    subgraph AI Agent
-        D1[Agno UI]
-        D2[MCP AI Server]
-    end
-
-    subgraph BI & Visualization
-        E[Metabase]
-    end
-
-    A --> B
-    B --> C
-    C --> D2
-    D2 --> D1
-    C --> E
