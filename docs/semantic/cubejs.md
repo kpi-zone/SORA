@@ -1,5 +1,7 @@
 # Cube.js: Semantic Modeling in Vero
 
+![Cube JS](cubejs.png "Cube JS Overview")
+
 Cube.js serves as the **central semantic layer** in the Vero architecture. It provides a unified and consistent way to define business logic (metrics, dimensions, KPIs), exposes that logic via APIs, and ensures reusability across AI agents, dashboards, and external applications.
 
 > 🔗 [Cube.js GitHub](https://github.com/cube-js/cube)
