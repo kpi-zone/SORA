@@ -1,6 +1,6 @@
 # Docker & Compose Configuration for Vero
 
-This document explains how Docker and Docker Compose are used to orchestrate the full Vero analytics stack. It complements the inline comments in `docker-compose.yml` and helps developers understand the purpose of each container, how the services communicate, and how to troubleshoot or modify the setup.
+This document explains how Docker and Docker Compose are used to orchestrate the full Vero analytics stack. It complements the inline comments in `docker-compose.yml` and helps you understand the purpose of each container, how the services communicate, and how to troubleshoot or modify the setup.
 
 ## Architecture Overview
 

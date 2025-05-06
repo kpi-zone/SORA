@@ -7,14 +7,14 @@ This guide walks you through setting up **Vero** on your local machine using Doc
 - [Git](https://git-scm.com/downloads)
 - [Docker + Docker Compose](https://docs.docker.com/get-docker/)
 
-##x 1. Clone the Vero Repository
+### 1. Clone the Vero Repository
 
 ```bash
 git clone https://github.com/kpi-zone/Vero.git
 cd Vero
 ```
 
-##x 2. Start the Stack with Docker
+### 2. Start the Stack with Docker
 
 Run the following command from the **Vero project root**:
 
@@ -25,7 +25,7 @@ docker compose --env-file .env.dev up --build
 > This uses `.env.dev` to load development environment variables.
 > For production or custom environments, point to a different `.env` file.
 
-##x 3. What Gets Built
+### 3. What Gets Built
 
 During the build process, Docker sets up all key components of the [Vero architecture](./architecture.md):
 
@@ -36,7 +36,7 @@ During the build process, Docker sets up all key components of the [Vero archite
 - **Agno AI Agent** – Frontend chat interface
 - **Metabase** – Dashboards and visualizations
 
-##x 4. Demo Data Initialization
+### 4. Demo Data Initialization
 
 As part of the setup, Vero will:
 
@@ -46,7 +46,7 @@ As part of the setup, Vero will:
 
 Once the build completes, you'll need to finish setting up Metabase manually.
 
-##x 5. Finalize Metabase Setup
+### 5. Finalize Metabase Setup
 
 1. Open [http://localhost:3000](http://localhost:3000) in your browser.
 2. Create an **admin user**.
