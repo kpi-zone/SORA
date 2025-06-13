@@ -4,7 +4,6 @@
 
 The architecture is designed around six key layers: **Data Ingestion, Data Warehouse, Semantic Modeling, AI Agent, AI Workflow Orchestration, and BI & Visualization**. Each layer is decoupled and replaceable, allowing flexibility for various use cases.
 
-
 ## Component Overview
 
 ### 1. Data Ingestion Layer – **Airbyte**
@@ -20,8 +19,6 @@ Airbyte cleanly separates **extraction logic from storage**, allowing you to add
 
 > Want to swap PostgreSQL for another destination? No problem — Airbyte supports a wide range of targets.
 
-
-
 ### 2. Data Warehouse Layer – **PostgreSQL**
 
 **Purpose:** Serve as the central storage and query engine for raw, normalized, and modeled data.
@@ -36,8 +33,6 @@ PostgreSQL acts as the **single source of truth** for all downstream systems —
 
 > **Scalability Note:** PostgreSQL is great for most use cases, but if you need horizontal scaling or real-time analytics, you can swap it out for high-performance engines like **Apache Doris**, **ClickHouse**, or **BigQuery**.
 
-
-
 ### 3. Semantic Layer – **Cube.js**
 
 **Purpose:** Define KPIs, dimensions, and business logic in a structured, queryable format.
@@ -51,8 +46,6 @@ PostgreSQL acts as the **single source of truth** for all downstream systems —
 - **Authorization**: Built-in support for row-level security via JWTs
 
 Cube.js allows you to **model once and query anywhere**, powering both dashboards and AI interfaces with consistent definitions.
-
-
 
 ### 4. AI Agent Layer – **Agno UI + MCP AI Server**
 
@@ -71,7 +64,6 @@ Cube.js allows you to **model once and query anywhere**, powering both dashboard
 
 The AI layer uses Cube’s metadata to ground every question in your actual data model — no hallucinated KPIs or misleading guesses.
 
-
 ### 5. Agentic AI Workflow Layer – **n8n**
 
 **Purpose:** Coordinate multi-agent task chains, trigger actions based on LLM output, and automate follow-up tasks across systems.
@@ -89,8 +81,6 @@ The AI layer uses Cube’s metadata to ground every question in your actual data
 n8n acts as the **execution layer** for agentic use cases — enabling complex workflows, multi-step decision logic, and end-to-end automation across the Vero stack.
 
 > Example: After an AI agent identifies a revenue drop, n8n can automatically email stakeholders, schedule a follow-up sync, and run a diagnostic Cube.js query.
-
-
 
 ### 6. BI & Visualization Layer – **Metabase**
 

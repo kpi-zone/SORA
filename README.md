@@ -28,8 +28,6 @@ Vero was built to solve that — with a **clean reference architecture** and a c
 
 With Vero, you’re not just consuming analytics — you **own the full pipeline**, from ingestion to insight.
 
-
-
 ## 🧱 Architecture Overview
 
 Vero is made up of six layers:
@@ -43,8 +41,6 @@ Vero is made up of six layers:
 
 Each layer is loosely coupled and can be replaced or extended as needed.
 
-
-
 ## 📦 What's Included?
 
 - Prebuilt **Docker environment** for local or on-prem deployment
@@ -54,15 +50,9 @@ Each layer is loosely coupled and can be replaced or extended as needed.
 - **Automated workflows and agentic task orchestration with n8n**
 - Traditional dashboards and visualizations via Metabase
 
-
-
 ## 🧪 Quickstart
 
 ```
-bash
-
-
-KopierenBearbeiten
 # 1. Clone the repository
 $ git clone https://github.com/kpi-zone/Vero.git
 $ cd Vero
@@ -79,15 +69,9 @@ These two versions are necessary because the default Metabase image (metabase/me
 | `docker-compose.yaml`       | Default version for most x86_64 environments                 |
 | `docker-compose.arm64.yaml` | Special version for ARM-based systems like Apple Silicon (M1/M2 chips) |
 
-
-
 To check your system architecture:
 
 ```
-bash
-
-
-KopierenBearbeiten
 uname -m
 ```
 
@@ -97,10 +81,6 @@ uname -m
 ### Run the stack:
 
 ```
-bash
-
-
-KopierenBearbeiten
 # For x86_64:
 docker compose --env-file .env.dev -f docker-compose.yaml up --build
 
@@ -109,8 +89,6 @@ docker compose --env-file .env.dev -f docker-compose.arm64.yaml up --build
 ```
 
 > See [`docs/quickstart.md`](./docs/quickstart.md) for full instructions and environment setup.
-
-
 
 ## 📚 Documentation
 
@@ -133,8 +111,6 @@ This is a community-friendly reference project. We welcome:
 - New data sources, transformations, and AI plugins
 
 Feel free to open a PR or issue!
-
-
 
 ## 📄 License
 
