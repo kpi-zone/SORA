@@ -74,6 +74,7 @@ During the build process, Docker sets up all key components of the [Vero archite
 - **Cube.js** – Semantic modeling layer
 - **MCP AI Server** – Natural language query engine
 - **Agno AI Agent** – Frontend chat interface
+- **n8n** – Agentic AI Workflow automation
 - **Metabase** – Dashboards and visualizations
 
 ## 4. Demo Data Initialization
@@ -111,6 +112,7 @@ Once the build completes, you'll need to finish setting up Metabase manually.
 | Metabase   | [http://localhost:3000](http://localhost:3000)                                                                       | Final setup required          |
 | MCP-Server | [http://localhost:9000](http://localhost:9000)                                                                       | Intalled and running          |
 | AI Agent   | [http://localhost:8505](http://localhost:8505)                                                                       | Final setup required          |
+| N8N        | [http://localhost:5678](http://localhost:5678)                                                                       | Final setup required          |
 | PostgreSQL | Host: `localhost`<br>Port: `5432`<br>Username: `username`<br>Password: `Nearness4PrincessNext`<br>Database: `demodb` | Accessible via any SQL client |
 
 ## That’s it!

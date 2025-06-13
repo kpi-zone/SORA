@@ -28,17 +28,22 @@ Vero was built to solve that — with a **clean reference architecture** and a c
 
 With Vero, you’re not just consuming analytics — you **own the full pipeline**, from ingestion to insight.
 
+
+
 ## 🧱 Architecture Overview
 
-Vero is made up of five layers:
+Vero is made up of six layers:
 
 1. **Data Ingestion** – powered by [Airbyte](https://airbyte.com)
 2. **Data Warehouse** – default: PostgreSQL (replaceable with Apache Doris or DuckDB)
 3. **Semantic Modeling** – [Cube.js](https://cube.dev)
 4. **AI Agent Interface** – [Agno](https://docs.agno.com/introduction) + [MCP server](https://github.com/isaacwasserman/mcp_cube_server)
-5. **BI & Dashboards** – [Metabase](https://metabase.com) (optional: Superset, Tableau, Power BI, etc.)
+5. **AI Workflow Orchestration** – [n8n](https://docs.n8n.io/) for automating agentic tasks and follow-ups
+6. **BI & Dashboards** – [Metabase](https://metabase.com) (optional: Superset, Tableau, Power BI, etc.)
 
 Each layer is loosely coupled and can be replaced or extended as needed.
+
+
 
 ## 📦 What's Included?
 
@@ -46,11 +51,18 @@ Each layer is loosely coupled and can be replaced or extended as needed.
 - Sample dataset based on the **Contoso Retail** model
 - Ready-to-use semantic models and views in Cube.js
 - Natural language query agent powered by GPT or Claude
+- **Automated workflows and agentic task orchestration with n8n**
 - Traditional dashboards and visualizations via Metabase
+
+
 
 ## 🧪 Quickstart
 
-```bash
+```
+bash
+
+
+KopierenBearbeiten
 # 1. Clone the repository
 $ git clone https://github.com/kpi-zone/Vero.git
 $ cd Vero
@@ -62,14 +74,20 @@ Vero supports two versions of the Docker Compose configuration.
 
 These two versions are necessary because the default Metabase image (metabase/metabase:latest) does not support ARM64 architecture out-of-the-box. If you're running Vero on an ARM64 machine (like Apple Silicon), you'll need a compatible image to ensure Metabase starts correctly.
 
-| File                        | Description                                                            |
-| --------------------------- | ---------------------------------------------------------------------- |
-| `docker-compose.yaml`       | Default version for most x86_64 environments                           |
+| File                        | Description                                                  |
+| --------------------------- | ------------------------------------------------------------ |
+| `docker-compose.yaml`       | Default version for most x86_64 environments                 |
 | `docker-compose.arm64.yaml` | Special version for ARM-based systems like Apple Silicon (M1/M2 chips) |
+
+
 
 To check your system architecture:
 
-```bash
+```
+bash
+
+
+KopierenBearbeiten
 uname -m
 ```
 
@@ -78,7 +96,11 @@ uname -m
 
 ### Run the stack:
 
-```bash
+```
+bash
+
+
+KopierenBearbeiten
 # For x86_64:
 docker compose --env-file .env.dev -f docker-compose.yaml up --build
 
@@ -88,6 +110,8 @@ docker compose --env-file .env.dev -f docker-compose.arm64.yaml up --build
 
 > See [`docs/quickstart.md`](./docs/quickstart.md) for full instructions and environment setup.
 
+
+
 ## 📚 Documentation
 
 - [Architecture Overview](./docs/architecture.md)
@@ -96,9 +120,9 @@ docker compose --env-file .env.dev -f docker-compose.arm64.yaml up --build
 - [Environment Variables](./docs/conf/environment.md)
 - [Semantic Modeling (Cube.js)](./docs/semantic/cubejs.md)
 - [BI Layer (Metabase)](./docs/bi/metabase.md)
-- [MCP Server](./docs/ai-agent/mcp-server.md)
-- [AI Agent](./docs/ai-agent/agno.md)
+- [AI Agent Layer (MCP + Agno)](./docs/ai-agent/mcp-server.md)
 - [Warehouse Layer (PostgreSQL)](./docs/warehouse/postgres.md)
+
 
 ## ❤️ Contributions Welcome
 
@@ -109,6 +133,8 @@ This is a community-friendly reference project. We welcome:
 - New data sources, transformations, and AI plugins
 
 Feel free to open a PR or issue!
+
+
 
 ## 📄 License
 
