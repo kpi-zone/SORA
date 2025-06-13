@@ -12,10 +12,8 @@ COPY requirements.txt .
 COPY .env /app/.env
 
 # Install dependencies without installing the package itself
+RUN pip install --upgrade pip
 RUN pip install --no-cache-dir -r requirements.txt
-
-# Install the project
-RUN pip install -r requirements.txt --no-cache-dir
 
 # Default: run Streamlit app on http://localhost:8505/
 CMD ["streamlit", "run", "/app/src/app-st.py", \

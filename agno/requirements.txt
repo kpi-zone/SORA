@@ -4,4 +4,3 @@ agno
 python-dotenv
 sqlalchemy
 mcp
-mcp-client

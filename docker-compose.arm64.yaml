@@ -24,13 +24,14 @@ services:
       - ./cubejs/model:/cube/conf/model # Mount data models (schemas)
       - ./cubejs/views:/cube/conf/model/views # Mount view definitions
     depends_on:
-      - postgres # Cube.js requires PostgreSQL to be running first
+      data-warehouse: # Cube.js requires the PostgreSQL data warehouse to be running first
+        condition: service_healthy # cubejs will only start once data-warehouse is healthy
 
   # ---------------------
   # PostgreSQL (Data Warehouse for Cube.js)
   # ---------------------
-  postgres:
-    image: postgres:latest # Official PostgreSQL image
+  data-warehouse:
+    image: postgres:16 # Official PostgreSQL image
     container_name: postgres
     build:
       context: ./db # Optional: use a custom Dockerfile or init scripts
@@ -38,10 +39,15 @@ services:
       - vero
     ports:
       - "5432:5432" # Default PostgreSQL port exposed for local access
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U user -d vero-demo-db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     env_file:
       - ./db/.env.dev # Contains DB name, user, and password for Cube.js
     volumes:
-      - db-data:/var/lib/postgresql/data # Persistent storage for PostgreSQL data
+      - data-warehouse-db-data:/var/lib/postgresql/data # Persistent storage for PostgreSQL data
 
   # ---------------------
   # MCP Server (Custom AI Agent / API Middleware)
@@ -90,12 +96,10 @@ services:
   metabase-db:
     image: postgres:13 # Stable, compatible version of PostgreSQL for Metabase
     container_name: metabase-db
-    ports:
-      - "5433:5432" # PostgreSQL port exposed on host as 5433
     env_file:
       - ./metabase/.env.dev # Username, password, and database name
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U metabase"] # Healthcheck for DB readiness
+      test: ["CMD-SHELL", "pg_isready -U user -d metabase"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -107,8 +111,8 @@ services:
   # ---------------------
   # Agno AI Agent (Streamlit-based interface for testing AI functions)
   # ---------------------
-  agno-ai-agent:
-    container_name: agno-ai-agent
+  agno:
+    container_name: agno
     build:
       context: ./agno # Custom Streamlit agent build context
     volumes:
@@ -121,14 +125,47 @@ services:
     networks:
       - vero
 
+  # ---------------------
+  # n8n Server
+  # ---------------------
+  n8n:
+    container_name: n8n
+    image: n8nio/n8n:latest
+    depends_on:
+      n8n_db:
+        condition: service_healthy
+    ports:
+      - "5678:5678"
+    volumes:
+      - ./n8n-data:/home/node/.n8n
+    networks:
+      - vero
+
+  n8n_db:
+    image: postgres:15
+    container_name: n8n-db
+    restart: unless-stopped
+    environment:
+      - POSTGRES_USER=n8n
+      - POSTGRES_PASSWORD=n8n
+      - POSTGRES_DB=n8n
+    volumes:
+      - n8n-db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U n8n -d n8n"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
 # ---------------------
 # Volumes for Persistence
 # ---------------------
 volumes:
   metabase-db-data: # Volume for Metabase's PostgreSQL database
   metabase-data: # Volume for Metabase application state
-  db-data: # Volume for Cube.js PostgreSQL database
-  airbyte_data: # Placeholder volume for Airbyte (if later integrated)
+  data-warehouse-db-data: # Volume for Cube.js PostgreSQL database
+  n8n-data: # Volume for n8n instance
+  n8n-db-data: # Volume for n8n's PostgreSQL database
 
 # ---------------------
 # Shared Network

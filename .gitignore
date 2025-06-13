@@ -4,6 +4,7 @@
 # Ignore Docker volumes
 volumes/
 db-data/
+n8n-data/
 
 # Ignore Python artifacts
 __pycache__/
@@ -27,3 +28,6 @@ node_modules/
 # Ignore VSCode workspace settings
 .vscode/
 *.code-workspace
+
+# Ignore the playground
+playground/
