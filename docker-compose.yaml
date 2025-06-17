@@ -180,16 +180,18 @@ services:
       - "443:443" # Expose HTTPS
     volumes:
       - /var/run/docker.sock:/tmp/docker.sock:ro
-      - ./nginx/logs:/var/log/nginx # Optional: Log access/errors
-      - ./nginx/certs:/etc/nginx/certs:ro
+      - ./nginx/logs:/var/log/nginx
+      - ./nginx/certs:/etc/nginx/certs:rw
       - ./nginx/vhost.d:/etc/nginx/vhost.d
-      - ./nginx/html:/var/www/html # Root folder for static html files
+      - ./nginx/html:/usr/share/nginx/html # ✅ Corrected path
     networks:
-      - vero # Shared network for inter-service communication
+      - vero
+    labels:
+      - com.github.nginx-proxy.nginx
     depends_on:
-      cubejs: # requires the cubejs to be running first to mount the host
+      cubejs:
         condition: service_healthy
-      n8n: # requires the n8n to be running first to mount the host
+      n8n:
         condition: service_healthy
 
   letsencrypt:
@@ -204,7 +206,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - ./nginx/certs:/etc/nginx/certs:rw
       - ./nginx/vhost.d:/etc/nginx/vhost.d
-      - ./nginx/html:/var/www/html
+      - ./nginx/html:/usr/share/nginx/html # ✅ Consistent and correct
     networks:
       - vero
 
