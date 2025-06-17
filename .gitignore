@@ -31,3 +31,6 @@ node_modules/
 
 # Ignore the playground
 playground/
+
+# Individual Files
+*.cognivise.*

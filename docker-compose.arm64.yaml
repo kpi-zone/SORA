@@ -5,21 +5,20 @@ services:
   cubejs:
     image: cubejs/cube:latest # Official Cube.js image
     container_name: cubejs # Explicit container name for easier referencing
+    env_file:
+      - ${CUBEJS_ENV_FILE} # Environment variables for Cube.js
     build:
       context: ./cubejs # Optional: build Cube.js from local Dockerfile (custom setup)
     networks:
       - vero # Shared network for inter-service communication
     ports:
-      - "4000:4000" # Cube.js REST API (host:container)
       - "15432:15432" # Cube SQL API using PostgreSQL wire protocol
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:4000/readyz"] # Healthcheck for Cube.js
+      test: ["CMD", "curl", "-f", "http://cubejs:4000/readyz"] # Healthcheck for Cube.js
       interval: 10s
       timeout: 5s
       retries: 10
       start_period: 30s
-    env_file:
-      - ./cubejs/.env.dev # Environment variables for Cube.js (local dev only)
     volumes:
       - ./cubejs/model:/cube/conf/model # Mount data models (schemas)
       - ./cubejs/views:/cube/conf/model/views # Mount view definitions
@@ -45,7 +44,7 @@ services:
       timeout: 5s
       retries: 5
     env_file:
-      - ./db/.env.dev # Contains DB name, user, and password for Cube.js
+      - ${WAREHOUSE_ENV_FILE} # Contains DB name, user, and password for Cube.js
     volumes:
       - data-warehouse-db-data:/var/lib/postgresql/data # Persistent storage for PostgreSQL data
 
@@ -65,7 +64,7 @@ services:
     ports:
       - "9000:9000" # MCP Server API port for SSE and AI middleware
     env_file:
-      - ./mcp-server/.env.dev # Dev environment config (includes secret tokens, etc.)
+      - ${MCP_ENV_FILE} # Dev environment config (includes secret tokens, etc.)
     command: # Command-line args passed to the MCP process
       - --endpoint
       - ${MCP_ENDPOINT} # URL of the Cube.js backend
@@ -78,10 +77,8 @@ services:
   metabase:
     image: stephaneturquay/metabase-arm64:latest # ARM64-compatible Metabase image
     container_name: metabase
-    ports:
-      - "3000:3000" # Metabase web UI
     env_file:
-      - ./metabase/.env.dev # Configuration for DB access, credentials, etc.
+      - ${METABASE_ENV_FILE} # Configuration for DB access, credentials, etc.
     depends_on:
       metabase-db:
         condition: service_healthy # Metabase starts after DB is ready
@@ -97,7 +94,7 @@ services:
     image: postgres:13 # Stable, compatible version of PostgreSQL for Metabase
     container_name: metabase-db
     env_file:
-      - ./metabase/.env.dev # Username, password, and database name
+      - ${METABASE_DB_ENV_FILE} # Username, password, and database name
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U user -d metabase"]
       interval: 10s
@@ -121,7 +118,7 @@ services:
     ports:
       - "8505:8505" # Streamlit server port for accessing the agent UI
     env_file:
-      - ./agno/.env # OpenAI Key and MCP Server Connection
+      - ${AGNO_ENV_FILE} # OpenAI Key and MCP Server Connection
     networks:
       - vero
 
@@ -131,24 +128,30 @@ services:
   n8n:
     container_name: n8n
     image: n8nio/n8n:latest
+    build:
+      context: ./n8n # Custom context
+    env_file:
+      - ${N8N_ENV_FILE} # n8n Configuration
     depends_on:
       n8n_db:
         condition: service_healthy
-    ports:
-      - "5678:5678"
     volumes:
       - ./n8n-data:/home/node/.n8n
     networks:
       - vero
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://n8n:5678/healthz"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 20s
 
   n8n_db:
     image: postgres:15
-    container_name: n8n-db
+    container_name: n8n_db
     restart: unless-stopped
-    environment:
-      - POSTGRES_USER=n8n
-      - POSTGRES_PASSWORD=n8n
-      - POSTGRES_DB=n8n
+    env_file:
+      - ${N8N_ENV_FILE} # n8n Configuration
     volumes:
       - n8n-db-data:/var/lib/postgresql/data
     healthcheck:
@@ -156,6 +159,31 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
+    networks:
+      - vero
+
+  # ────────────────────────────────
+  # NGINX reverse proxy for local dev
+  # ────────────────────────────────
+  nginx:
+    image: nginxproxy/nginx-proxy
+    container_name: nginx
+    ports:
+      - "80:80" # Expose HTTP
+      - "443:443" # Expose HTTPS
+    volumes:
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+      - ./nginx/logs:/var/log/nginx # Optional: Log access/errors
+      - ./nginx/certs:/etc/nginx/certs:ro
+      - ./nginx/vhost.d:/etc/nginx/vhost.d
+      - ./nginx/html:/var/www/html # Root folder for static html files
+    networks:
+      - vero # Shared network for inter-service communication
+    depends_on:
+      cubejs: # requires the cubejs to be running first to mount the host
+        condition: service_healthy
+      n8n: # requires the n8n to be running first to mount the host
+        condition: service_healthy
 
 # ---------------------
 # Volumes for Persistence

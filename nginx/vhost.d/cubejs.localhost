@@ -1,0 +1,23 @@
+# ========================================================================
+# 📊 NGINX Proxy Configuration for Cube.js
+#
+# This configuration enables reverse proxy support for Cube.js,
+# including handling large requests and WebSocket connections.
+#
+# ========================================================================
+
+# Allow large POST payloads (e.g., queries with complex filters or data)
+client_max_body_size 50m;
+
+# Use HTTP/1.1 to support WebSockets and persistent connections
+proxy_http_version 1.1;
+
+# WebSocket headers for real-time query streaming or subscriptions
+proxy_set_header Upgrade $http_upgrade;
+proxy_set_header Connection "upgrade";
+
+# Preserve original request headers for logging and upstream context
+proxy_set_header Host $host;
+proxy_set_header X-Real-IP $remote_addr;
+proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+proxy_set_header X-Forwarded-Proto $scheme;

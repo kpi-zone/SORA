@@ -1,9 +1,6 @@
 # Use the official Cube.js Docker image as the base
 FROM cubejs/cube:latest
 
-# Set the working directory inside the container
-WORKDIR /
-
 # Install curl (used for healthchecks or testing endpoints)
 # - apt-get update fetches the latest package list
 # - apt-get install -y curl installs curl without interactive prompts
