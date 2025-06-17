@@ -75,7 +75,7 @@ services:
   # Metabase (BI Dashboard / Analytics Frontend)
   # ---------------------
   metabase:
-    image: stephaneturquay/metabase-arm64:latest # ARM64-compatible Metabase image
+    image: metabase/metabase:latest # ARM64-compatible Metabase image
     container_name: metabase
     env_file:
       - ${METABASE_ENV_FILE} # Configuration for DB access, credentials, etc.
@@ -145,6 +145,7 @@ services:
       timeout: 10s
       retries: 5
       start_period: 20s
+    user: root # run the container as root to allow permission fix
 
   n8n_db:
     image: postgres:15
@@ -183,6 +184,7 @@ services:
       cubejs: # requires the cubejs to be running first to mount the host
         condition: service_healthy
       n8n: # requires the n8n to be running first to mount the host
+        condition: service_healthy
 
   letsencrypt:
     image: nginxproxy/acme-companion
