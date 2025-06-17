@@ -199,13 +199,14 @@ services:
       - nginx
     environment:
       - DEFAULT_EMAIL=${LETSENCRYPT_DEFAULT_EMAIL}
+      - NGINX_PROXY_CONTAINER=nginx
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - ./nginx/certs:/etc/nginx/certs:rw
       - ./nginx/vhost.d:/etc/nginx/vhost.d
       - ./nginx/html:/var/www/html
     networks:
-      - vero # Shared network for inter-service communication
+      - vero
 
 # ---------------------
 # Volumes for Persistence
