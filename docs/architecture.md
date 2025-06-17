@@ -4,6 +4,33 @@
 
 The architecture is designed around six key layers: **Data Ingestion, Data Warehouse, Semantic Modeling, AI Agent, AI Workflow Orchestration, and BI & Visualization**. Each layer is decoupled and replaceable, allowing flexibility for various use cases.
 
+## Reverse Proxy and Networking Layer – **nginx-proxy + acme-companion**
+
+To securely expose services in both development and production, Vero uses a **containerized reverse proxy system**.
+
+### 🔧 Development Mode
+
+- **Tool Used**: `nginxproxy/nginx-proxy`
+- **Purpose**: Automatically routes incoming requests to services (e.g. `n8n.localhost`) based on `VIRTUAL_HOST` and `VIRTUAL_PORT` environment variables.
+- **Usage**:
+  - No HTTPS/SSL (runs on plain HTTP for simplicity)
+  - Easy local testing via `*.localhost` DNS or `127.0.0.1`
+
+
+### 🔐 Production Mode
+
+- **Tools Used**:
+  - `nginxproxy/nginx-proxy`
+  - `nginxproxy/acme-companion`
+- **Purpose**:
+  - Handles reverse proxy *and* automated SSL certificate management using Let's Encrypt
+  - Requires DNS-resolvable domain names
+- **Usage**:
+  - Certificates are issued and renewed automatically
+  - Secure traffic (HTTPS with TLS)
+
+> All services like `n8n`, `metabase`, etc. expose their hostname using `VIRTUAL_HOST`, and optionally enable SSL via `LETSENCRYPT_HOST` + `LETSENCRYPT_EMAIL`.
+
 ## Component Overview
 
 ### 1. Data Ingestion Layer – **Airbyte**

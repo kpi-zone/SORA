@@ -65,7 +65,109 @@ docker compose --env-file .env.dev -f docker-compose.arm64.yaml up --build
 > This uses `.env.dev` to load development environment variables.
 > For production or custom environments, point to a different `.env` file.
 
-## 3. What Gets Built
+## 3. Configure Your Hosts File
+
+To use custom domains like `n8n.localhost`, `metabase.localhost`, and `cubejs.localhost`, you must map them to `127.0.0.1`.
+
+### 🔧 On macOS / Linux
+
+Run:
+
+```
+sudo nano /etc/hosts
+```
+
+Add:
+
+```
+127.0.0.1 cubejs.localhost
+127.0.0.1 n8n.localhost
+127.0.0.1 metabase.localhost
+```
+
+Then save (`Ctrl+O`, `Enter`, then `Ctrl+X` to exit).
+
+### 🪟 On Windows
+
+1. Open Notepad as Administrator
+2. Open file: `C:\Windows\System32\drivers\etc\hosts`
+3. Add:
+
+```
+127.0.0.1 cubejs.localhost
+127.0.0.1 n8n.localhost
+127.0.0.1 metabase.localhost
+```
+
+4. Save the file and restart your browser or `nginx-proxy`.
+
+### 💡 Tip: Environment File Management
+
+> This uses `.env.dev` to load development environment variables.
+> For production or custom environments, point to a different `.env` file.
+
+You can use multiple environment files like:
+
+```
+# Development
+docker compose --env-file .env.dev -f docker-compose.yaml up --build
+
+# Production
+docker compose --env-file .env.prod -f docker-compose.yaml up --build
+```
+
+#### 🗂 .env.example Files
+
+Each major component (e.g., `n8n`, `metabase`, `agno`) includes a corresponding `.env.example` file.
+Use these as a template to create your real environment config:
+
+```
+cp ./n8n/.env.example ./n8n/.env.dev
+```
+
+Customize values inside as needed — especially ports, credentials, hostnames, and tokens.
+
+------
+
+### 🌐 Custom Per-Domain NGINX Configuration
+
+If you want to override the default proxy behavior for any domain, you can:
+
+- Create a file under `nginx/vhost.d/<yourdomain>.conf`
+- Add custom `location` blocks, headers, or SSL options
+
+Example:
+
+```
+# ========================================================================
+# 📊 NGINX Proxy Configuration for Cube.js
+#
+# This configuration enables reverse proxy support for Cube.js,
+# including handling large requests and WebSocket connections.
+#
+# ========================================================================
+
+# Allow large POST payloads (e.g., queries with complex filters or data)
+client_max_body_size 50m;
+
+# Use HTTP/1.1 to support WebSockets and persistent connections
+proxy_http_version 1.1;
+
+# WebSocket headers for real-time query streaming or subscriptions
+proxy_set_header Upgrade $http_upgrade;
+proxy_set_header Connection "upgrade";
+
+# Preserve original request headers for logging and upstream context
+proxy_set_header Host $host;
+proxy_set_header X-Real-IP $remote_addr;
+proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+proxy_set_header X-Forwarded-Proto $scheme;
+
+```
+
+These will be automatically picked up by `nginx-proxy`.
+
+## 4. What Gets Built
 
 During the build process, Docker sets up all key components of the [Vero architecture](./architecture.md):
 
@@ -77,7 +179,7 @@ During the build process, Docker sets up all key components of the [Vero archite
 - **n8n** – Agentic AI Workflow automation
 - **Metabase** – Dashboards and visualizations
 
-## 4. Demo Data Initialization
+## 5. Demo Data Initialization
 
 As part of the setup, Vero will:
 
@@ -87,7 +189,7 @@ As part of the setup, Vero will:
 
 Once the build completes, you'll need to finish setting up Metabase manually.
 
-## 5. Finalize Metabase Setup
+## 6. Finalize Metabase Setup
 
 1. Open [http://localhost:3000](http://localhost:3000) in your browser.
 2. Create an **admin user**.
@@ -106,14 +208,15 @@ Once the build completes, you'll need to finish setting up Metabase manually.
 
 ## Accessing the Tools
 
-| Tool       | URL                                                                                                                  | Notes                         |
-| ---------- | -------------------------------------------------------------------------------------------------------------------- | ----------------------------- |
-| Cube.js    | [http://localhost:4000](http://localhost:4000)                                                                       | Cube Playground               |
-| Metabase   | [http://localhost:3000](http://localhost:3000)                                                                       | Final setup required          |
-| MCP-Server | [http://localhost:9000](http://localhost:9000)                                                                       | Intalled and running          |
-| AI Agent   | [http://localhost:8505](http://localhost:8505)                                                                       | Final setup required          |
-| N8N        | [http://localhost:5678](http://localhost:5678)                                                                       | Final setup required          |
-| PostgreSQL | Host: `localhost`<br>Port: `5432`<br>Username: `username`<br>Password: `Nearness4PrincessNext`<br>Database: `demodb` | Accessible via any SQL client |
+
+| Tool       | URL                                                     | Notes                   |
+| ---------- | ------------------------------------------------------- | ----------------------- |
+| Cube.js    | [http://cubejs.localhost](http://cubejs.localhost/)     | Cube Playground         |
+| Metabase   | [http://metabase.localhost](http://metabase.localhost/) | Setup required          |
+| n8n        | [http://n8n.localhost](http://n8n.localhost/)           | Requires login          |
+| MCP Server | [http://localhost:9000](http://localhost:9000/)         | AI backend API          |
+| Agno Agent | [http://localhost:8505](http://localhost:8505/)         | Chat frontend           |
+| Postgres   | `localhost:5432`, user: `user`                          | For dev database access |
 
 ## That’s it!
 
