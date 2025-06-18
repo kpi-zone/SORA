@@ -15,9 +15,9 @@ To enable the AI Agent in Vero (powered by the [Agno AI Framework](https://docs.
 
 2. Add your OpenAI API key like so:
 
-   ```
-   OPENAI_API_KEY=sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-   ```
+```env
+OPENAI_API_KEY=sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+```
 
 3. You can obtain an API key at [OpenAI’s platform](https://platform.openai.com/account/api-keys).
 
@@ -73,13 +73,13 @@ To use custom domains like `n8n.localhost`, `metabase.localhost`, and `cubejs.lo
 
 Run:
 
-```
+```bash
 sudo nano /etc/hosts
 ```
 
 Add:
 
-```
+```bash
 127.0.0.1 cubejs.localhost
 127.0.0.1 n8n.localhost
 127.0.0.1 metabase.localhost
@@ -93,7 +93,7 @@ Then save (`Ctrl+O`, `Enter`, then `Ctrl+X` to exit).
 2. Open file: `C:\Windows\System32\drivers\etc\hosts`
 3. Add:
 
-```
+```bash
 127.0.0.1 cubejs.localhost
 127.0.0.1 n8n.localhost
 127.0.0.1 metabase.localhost
@@ -108,7 +108,7 @@ Then save (`Ctrl+O`, `Enter`, then `Ctrl+X` to exit).
 
 You can use multiple environment files like:
 
-```
+```bash
 # Development
 docker compose --env-file .env.dev -f docker-compose.yaml up --build
 
@@ -121,7 +121,7 @@ docker compose --env-file .env.prod -f docker-compose.yaml up --build
 Each major component (e.g., `n8n`, `metabase`, `agno`) includes a corresponding `.env.example` file.
 Use these as a template to create your real environment config:
 
-```
+```bash
 cp ./n8n/.env.example ./n8n/.env.dev
 ```
 
@@ -138,7 +138,7 @@ If you want to override the default proxy behavior for any domain, you can:
 
 Example:
 
-```
+```nginx
 # ========================================================================
 # 📊 NGINX Proxy Configuration for Cube.js
 #
@@ -178,6 +178,8 @@ During the build process, Docker sets up all key components of the [Vero archite
 - **Agno AI Agent** – Frontend chat interface
 - **n8n** – Agentic AI Workflow automation
 - **Metabase** – Dashboards and visualizations
+- **NGINX + nginx-proxy** – Reverse proxy for routing, hostname resolution, and SSL termination
+- **Let's Encrypt** – Automatic SSL certificates for secure, production-grade HTTPS access
 
 ## 5. Demo Data Initialization
 
@@ -191,7 +193,7 @@ Once the build completes, you'll need to finish setting up Metabase manually.
 
 ## 6. Finalize Metabase Setup
 
-1. Open [http://localhost:3000](http://localhost:3000) in your browser.
+1. Open [http://metabase.localhost](http://metabase.localhost) in your browser.
 2. Create an **admin user**.
 3. When prompted to connect to a database:
 
@@ -206,8 +208,14 @@ Once the build completes, you'll need to finish setting up Metabase manually.
 
 > This "fake" connection is a quirk of Metabase when connecting to Cube.js, which acts like a Postgres proxy.
 
-## Accessing the Tools
+## 7. Finalize n8n Setup
 
+1. Open [http://n8n.localhost](http://n8n.localhost) in your browser.
+2. Setup an **owner account**
+4. Register your account with your **email address** to receive an activation key for unlocking additional free features.
+5. You'll receive an **email with the license key**. Click the link in the email and enter your key.
+
+## Accessing the Tools
 
 | Tool       | URL                                                     | Notes                   |
 | ---------- | ------------------------------------------------------- | ----------------------- |

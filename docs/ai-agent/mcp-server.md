@@ -19,7 +19,7 @@ An **MCP server** in the agentic AI context is a protocol-compliant service that
 
 MCP Server connects these components:
 
-```
+```bash
 User → Agno (chat UI) → MCP Server → Cube.js → PostgreSQL → Results
 ```
 

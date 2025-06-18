@@ -2,7 +2,7 @@
 
 **Vero** is a modular, open-source analytics framework that enables users to analyze, visualize, and interact with business KPIs using both traditional dashboards and natural language AI agents.
 
-The architecture is designed around six key layers: **Data Ingestion, Data Warehouse, Semantic Modeling, AI Agent, AI Workflow Orchestration, and BI & Visualization**. Each layer is decoupled and replaceable, allowing flexibility for various use cases.
+The architecture is designed around six key layers: **Data Ingestion, Data Warehouse, Semantic Modeling, AI Agent, Agentic AI Workflow Orchestration, and BI & Visualization**. Each layer is decoupled and replaceable, allowing flexibility for various use cases.
 
 ## Reverse Proxy and Networking Layer – **nginx-proxy + acme-companion**
 
@@ -29,7 +29,7 @@ To securely expose services in both development and production, Vero uses a **co
   - Certificates are issued and renewed automatically
   - Secure traffic (HTTPS with TLS)
 
-> All services like `n8n`, `metabase`, etc. expose their hostname using `VIRTUAL_HOST`, and optionally enable SSL via `LETSENCRYPT_HOST` + `LETSENCRYPT_EMAIL`.
+> All services (like n8n, Metabase, etc.) expose their hostnames using the VIRTUAL_HOST environment variable. SSL can be enabled by setting LETSENCRYPT_HOST and LETSENCRYPT_EMAIL. Please refer to the .env.example file for reference and customization.
 
 ## Component Overview
 

@@ -4,6 +4,8 @@ Vero is a modern, open-source analytics stack designed to help organizations wor
 
 It brings together best-in-class open technologies in a modular architecture, enabling you to **ingest, model, visualize, and query data — both with dashboards and natural language**.
 
+![Vero Stack](/docs/images/vero-stack.png "Vero Overview Overview")
+
 ## Why Vero?
 
 > **Make it easy for small and mid-sized organizations to adopt a modern, open, and self-hosted analytics stack — without giving up control.**
@@ -36,7 +38,7 @@ Vero is made up of six layers:
 2. **Data Warehouse** – default: PostgreSQL (replaceable with Apache Doris or DuckDB)
 3. **Semantic Modeling** – [Cube.js](https://cube.dev)
 4. **AI Agent Interface** – [Agno](https://docs.agno.com/introduction) + [MCP server](https://github.com/isaacwasserman/mcp_cube_server)
-5. **AI Workflow Orchestration** – [n8n](https://docs.n8n.io/) for automating agentic tasks and follow-ups
+5. **Agentic AI Workflow Orchestration** – [n8n](https://docs.n8n.io/) for automating agentic tasks and follow-ups
 6. **BI & Dashboards** – [Metabase](https://metabase.com) (optional: Superset, Tableau, Power BI, etc.)
 
 Each layer is loosely coupled and can be replaced or extended as needed.
@@ -45,14 +47,16 @@ Each layer is loosely coupled and can be replaced or extended as needed.
 
 - Prebuilt **Docker environment** for local or on-prem deployment
 - Sample dataset based on the **Contoso Retail** model
-- Ready-to-use semantic models and views in Cube.js
-- Natural language query agent powered by GPT or Claude
-- **Automated workflows and agentic task orchestration with n8n**
-- Traditional dashboards and visualizations via Metabase
+- Ready-to-use semantic models and views in **Cube.js**
+- Natural language query agent powered by **GPT** or **Claude**
+- Automated workflows and agentic AI orchestration with **n8n**
+- Traditional dashboards and visualizations via **Metabase**
+- **NGINX reverse proxy** setup for routing and traffic management
+- **Let's Encrypt SSL certificates** automated via **nginx-proxy** and **docker-gen** for secure HTTPS out of the box
 
 ## 🧪 Quickstart
 
-```
+```bash
 # 1. Clone the repository
 $ git clone https://github.com/kpi-zone/Vero.git
 $ cd Vero
@@ -71,7 +75,7 @@ These two versions are necessary because the default Metabase image (metabase/me
 
 To check your system architecture:
 
-```
+```bash
 uname -m
 ```
 
@@ -80,7 +84,7 @@ uname -m
 
 ### Run the stack:
 
-```
+```bash
 # For x86_64:
 docker compose --env-file .env.dev -f docker-compose.yaml up --build
 
