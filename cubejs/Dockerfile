@@ -18,3 +18,5 @@ FROM cubejs/cube:latest
 # - The layer is kept minimal by omitting unnecessary packages
 RUN apt-get update && apt-get install -y curl \
  && rm -rf /var/lib/apt/lists/*
+
+ WORKDIR /

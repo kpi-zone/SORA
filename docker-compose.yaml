@@ -37,7 +37,7 @@ services:
   # ---------------------
   data-warehouse:
     image: postgres:16 # Official PostgreSQL image
-    container_name: postgres
+    container_name: data-warehouse
     build:
       context: ./db # Optional: use a custom Dockerfile or init scripts
     networks:

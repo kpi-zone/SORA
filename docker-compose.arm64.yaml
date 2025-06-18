@@ -6,7 +6,7 @@ services:
     image: cubejs/cube:latest # Official Cube.js image
     container_name: cubejs # Explicit container name for easier referencing
     env_file:
-      - ${CUBEJS_ENV_FILE} # Environment variables for Cube.js
+      - ${CUBEJS_ENV_FILE} # Contains DB name, user, and password for Cube.js
     build:
       context: ./cubejs # Optional: build Cube.js from local Dockerfile (custom setup)
     networks:
@@ -20,8 +20,8 @@ services:
       retries: 10
       start_period: 30s
     volumes:
-      - ./cubejs/model:/cube/conf/model # Mount data models (schemas)
-      - ./cubejs/views:/cube/conf/model/views # Mount view definitions
+      - ./cubejs/model:/cube/conf/model:rw # Mount data models (schemas)
+      - ./cubejs/views:/cube/conf/model/views:rw # Mount view definitions
     depends_on:
       data-warehouse: # Cube.js requires the PostgreSQL data warehouse to be running first
         condition: service_healthy # cubejs will only start once data-warehouse is healthy
@@ -31,7 +31,7 @@ services:
   # ---------------------
   data-warehouse:
     image: postgres:16 # Official PostgreSQL image
-    container_name: postgres
+    container_name: data-warehouse
     build:
       context: ./db # Optional: use a custom Dockerfile or init scripts
     networks:
