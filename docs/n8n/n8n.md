@@ -2,7 +2,8 @@
 
 n8n is the **workflow automation engine** in the Vero stack. It enables both technical and non-technical users to create powerful, agent-driven data pipelines, automations, and integrations — with minimal code.
 
-(/docs/images/n8n.png)
+()
+![n8n](/docs/images/n8n.png "n8n Overview")
 
 In Vero, n8n acts as the orchestration layer for agentic AI workflows, triggered by events, schedules, or direct user input.
 
