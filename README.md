@@ -1,3 +1,5 @@
+[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](LICENSE.md)
+
 # Vero
 
 Vero is a modern, open-source analytics stack designed to help organizations work data-driven — without relying on opaque third-party SaaS platforms or complex enterprise BI tools.
@@ -5,6 +7,15 @@ Vero is a modern, open-source analytics stack designed to help organizations wor
 It brings together best-in-class open technologies in a modular architecture, enabling you to **ingest, model, visualize, and query data — both with dashboards and natural language**.
 
 ![Vero Stack](/docs/images/vero-stack.png "Vero Overview Overview")
+
+## 📚 Table of Contents
+
+- [Overview](#overview)
+- [Architecture](#architecture)
+- [Getting Started](#getting-started)
+- [Configuration](#configuration)
+- [Contributing](#contributing)
+- [License](#license)
 
 ## Why Vero?
 
@@ -118,6 +129,6 @@ Feel free to open a PR or issue!
 
 ## 📄 License
 
-Vero is licensed under the MIT License. All included third-party projects follow their respective licenses.
+Vero is licensed under the GPL-3.0 License. All included third-party projects follow their respective licenses.
 
 For support, ideas, or integration help, reach out via GitHub Discussions or open an issue. We’re building Vero to be the foundation for modern, self-managed analytics — for everyone.
