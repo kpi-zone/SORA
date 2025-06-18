@@ -26,12 +26,6 @@ services:
       data-warehouse: # Cube.js requires the PostgreSQL data warehouse to be running first
         condition: service_healthy # cubejs will only start once data-warehouse is healthy
 
-  cubestore:
-    image: cubejs/cubestore:latest
-    container_name: cubestore
-    networks:
-      - vero
-
   # ---------------------
   # PostgreSQL (Data Warehouse for Cube.js)
   # ---------------------
