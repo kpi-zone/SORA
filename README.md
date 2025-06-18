@@ -2,44 +2,48 @@
 
 # Vero
 
-Vero is a modern, open-source analytics stack designed to help organizations work data-driven — without relying on opaque third-party SaaS platforms or complex enterprise BI tools.
+**Vero** is a modern, open-source analytics and AI orchestration stack — designed to help organizations work **data-driven** and **agent-driven** without relying on black-box SaaS platforms or heavyweight enterprise BI tools.
 
-It brings together best-in-class open technologies in a modular architecture, enabling you to **ingest, model, visualize, and query data — both with dashboards and natural language**.
+It unifies best-in-class open technologies into a modular architecture that enables you to **ingest, model, visualize, and query data** — via both **interactive dashboards** and **natural language agents**.
 
-![Vero Stack](/docs/images/vero-stack.png "Vero Overview Overview")
+But Vero goes beyond analytics.
 
-## 📚 Table of Contents
+It introduces support for **Agentic AI**, enabling **multi-agent workflows**, **dynamic orchestration**, and **performance-aware coordination** — allowing AI systems to take real action in complex environments while remaining observable, auditable, and governed.
 
-- [Overview](#overview)
-- [Architecture](#architecture)
-- [Getting Started](#getting-started)
-- [Configuration](#configuration)
-- [Contributing](#contributing)
-- [License](#license)
+![Vero Stack](/docs/images/vero-stack.png)
+
 
 ## Why Vero?
 
-> **Make it easy for small and mid-sized organizations to adopt a modern, open, and self-hosted analytics stack — without giving up control.**
+> **Make it easy for small and mid-sized teams to adopt a modern, open, and self-hosted analytics + AI stack — without giving up control.**
 
-Too many organizations face the same challenges:
+### ❌ Common Pain Points
 
-- Complex and costly vendor ecosystems
-- Rigid tools that don’t adapt to your workflow
-- “Black box” SaaS platforms that obscure what's really happening under the hood
-- **Pushing sensitive internal data to external vendors just to generate a chart**
-- A lack of data sovereignty and limited infrastructure ownership
+- Opaque vendor platforms with unclear logic
+- Complex, inflexible data tools that resist integration
+- Data sent off to third-party clouds just to get basic metrics
+- No insight into what your AI agents are doing — or why
+- Difficulty scaling AI workflows beyond one-off scripts
 
-Vero was built to solve that — with a **clean reference architecture** and a commitment to open, modular design.
+## ✅ What Vero Solves
 
-### 🚀 Our Goals:
+Vero was built to address these challenges with a **clean, composable reference architecture** that combines modern analytics with intelligent, governed agent orchestration.
 
-- **Easy replication**: Provide a production-grade analytics stack that’s understandable, testable, and easy to deploy.
-- **Open-source + vendor-neutral**: Use well-documented OSS tools — no hidden fees or lock-in.
-- **Data sovereignty**: Run everything on your own servers. Keep internal data internal.
-- **Modern stack**: Built on today’s best practices — modular, scalable, and cloud-friendly.
-- **Accessible to teams**: Usable by data engineers, analysts, and non-technical stakeholders alike.
+### 🚀 Our Goals
 
-With Vero, you’re not just consuming analytics — you **own the full pipeline**, from ingestion to insight.
+- **Agent-first orchestration**: Native support for **multi-agent environments** with **workflow automation**, **decision delegation**, and **performance-aware orchestration**
+- **Self-hosted analytics**: Run the entire stack on your own infra — no vendor lock-in, no hidden fees
+- **Data sovereignty**: Your data stays where it belongs — inside your infrastructure
+- **Modular & modern**: Built on today’s best open-source tools (Cube.js, Metabase, n8n, Streamlit, PostgreSQL, etc.)
+- **Natural language interfaces**: Enable users to ask complex questions — and get answers — through integrated LLM agents
+- **Scalable architecture**: Designed for environments that need both **real-time insights** and **AI actionability**
+- **Team-friendly**: Built to support engineers, analysts, and domain experts equally — no specialization required
+
+With Vero, you’re not just consuming data — you’re building **intelligent systems** that reason, decide, and act.
+
+And you own the full pipeline.
+
+From **ingestion to visualization**, from **raw facts to orchestrated agents**, Vero gives your team the **clarity, control, and composability** to move from **insight to action** — securely, transparently, and at scale.
 
 ## 🧱 Architecture Overview
 
