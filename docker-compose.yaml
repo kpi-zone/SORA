@@ -20,8 +20,8 @@ services:
       retries: 10
       start_period: 30s
     volumes:
-      - ./cubejs/model:/cube/conf/model # Mount data models (schemas)
-      - ./cubejs/views:/cube/conf/model/views # Mount view definitions
+      - ./cubejs/model:/cube/conf/model:rw # Mount data models (schemas)
+      - ./cubejs/views:/cube/conf/model/views:rw # Mount view definitions
     depends_on:
       data-warehouse: # Cube.js requires the PostgreSQL data warehouse to be running first
         condition: service_healthy # cubejs will only start once data-warehouse is healthy
@@ -42,8 +42,6 @@ services:
       context: ./db # Optional: use a custom Dockerfile or init scripts
     networks:
       - vero
-    ports:
-      - "5432:5432" # Default PostgreSQL port exposed for local access
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U user -d vero-demo-db"]
       interval: 10s
@@ -70,7 +68,7 @@ services:
     ports:
       - "9000:9000" # MCP Server API port for SSE and AI middleware
     env_file:
-      - ${MCP_ENV_FILE} # Dev environment config (includes secret tokens, etc.)
+      - ${MCP_ENV_FILE}
     command: # Command-line args passed to the MCP process
       - --endpoint
       - ${MCP_ENDPOINT} # URL of the Cube.js backend
@@ -204,9 +202,11 @@ services:
       - NGINX_PROXY_CONTAINER=nginx
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./nginx/logs:/var/log/nginx
       - ./nginx/certs:/etc/nginx/certs:rw
+      - ./nginx/acme:/etc/acme.sh:rw
       - ./nginx/vhost.d:/etc/nginx/vhost.d
-      - ./nginx/html:/usr/share/nginx/html # ✅ Consistent and correct
+      - ./nginx/html:/usr/share/nginx/html
     networks:
       - vero
 

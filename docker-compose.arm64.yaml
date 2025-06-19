@@ -36,8 +36,6 @@ services:
       context: ./db # Optional: use a custom Dockerfile or init scripts
     networks:
       - vero
-    ports:
-      - "5432:5432" # Default PostgreSQL port exposed for local access
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U user -d vero-demo-db"]
       interval: 10s
@@ -174,9 +172,10 @@ services:
     volumes:
       - /var/run/docker.sock:/tmp/docker.sock:ro
       - ./nginx/logs:/var/log/nginx # Optional: Log access/errors
-      - ./nginx/certs:/etc/nginx/certs:ro
+      - ./nginx/certs:/etc/nginx/certs:rw
+      - ./nginx/acme:/etc/acme.sh:rw
       - ./nginx/vhost.d:/etc/nginx/vhost.d
-      - ./nginx/html:/var/www/html # Root folder for static html files
+      - ./nginx/html:/usr/share/nginx/html
     networks:
       - vero # Shared network for inter-service communication
     depends_on:
